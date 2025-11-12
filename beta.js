@@ -12,7 +12,7 @@ var config = {
     speed: {
         speed: 2,
         enabled: false
-    }.
+    }
 };
 
 // Vclip
@@ -49,6 +49,13 @@ function step() {
     ModAPI.player.stepHeight = config.step.height;
 }
 
+// Speed logic
+function speed() {
+    if (!config.speed.enabled) return;
+    ModAPI.player.motionX *= config.speed.speed;
+    ModAPI.player.motionZ *= config.speed.speed;
+}
+
 // ==== COMMANDS ==== //
 
 // .step Command
@@ -83,7 +90,7 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
         return;
     }
 
-    // no subcommand -> toggle
+    // toggle if no subcommand
     config.step.enabled = !config.step.enabled;
     ModAPI.displayToChat("[DC] Step " + (config.step.enabled ? "enabled" : "disabled"));
 });
@@ -143,34 +150,22 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
     ModAPI.displayToChat("[DC] Usage: .tp <x> <y> <z> [--force] OR .tp <player>");
 });
 
+// Fly
 var flyConfig = {
     enabled: false,
-    speed: 200 // adjust as needed
+    speed: 200
 };
 
-// Fly logic
 function fly() {
     if (!flyConfig.enabled) return;
 
     var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
-
-    // horizontal movement
     ModAPI.player.motionX = (input.right - input.left) * flyConfig.speed;
     ModAPI.player.motionZ = (input.forward - input.back) * flyConfig.speed;
-
-    // vertical movement
     ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
 }
 
-// Speed command
-ModAPI.addEventListener("sendchatmessage", (ev) => {
-    
-};
-
-// Update events
-ModAPI.addEventListener("update", fly);
-
-// Fly and Speed commands
+// Fly & Speed commands
 ModAPI.addEventListener("sendchatmessage", (ev) => {
     var msg = (ev.message || "").toLowerCase();
     var args = msg.split(/\s+/);
@@ -205,14 +200,14 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
         ev.preventDefault = true;
         var num = parseFloat(args[1]);
         if (!isNaN(num)) {
-            applySpeed(num);
-            ModAPI.displayToChat("[DC] Speed increased by " + num);
+            config.speed.enabled = true;
+            config.speed.speed = num;
+            ModAPI.displayToChat("[DC] Speed set to " + num);
         } else {
             ModAPI.displayToChat("[DC] Usage: .speed <number>");
         }
     }
 });
-
 
 // .help Command
 ModAPI.addEventListener("sendchatmessage", (ev) => {
@@ -225,6 +220,8 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
         ".step enable|disable|height <value> - Toggle or set step height",
         ".tp <x> <y> <z> [--force] - Teleport to coordinates",
         ".tp <player> - Teleport to a player",
+        ".fly enable|disable|speed <number> - Toggle fly or set fly speed",
+        ".speed <number> - Set horizontal speed multiplier",
         ".help - Show this help message"
     ];
 
@@ -232,7 +229,7 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
     commands.forEach(cmd => ModAPI.displayToChat(cmd));
 });
 
-
-
+// Update events
 ModAPI.addEventListener("update", step);
+ModAPI.addEventListener("update", fly);
 ModAPI.addEventListener("update", speed);
