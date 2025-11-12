@@ -141,34 +141,33 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
 
 var flyConfig = {
     enabled: false,
-    speed: 1000
-};
-
-var noclipConfig = {
-    enabled: false
+    speed: 1 // adjust as needed
 };
 
 // Fly logic
 function fly() {
     if (!flyConfig.enabled) return;
 
-    var input = ModAPI.player.input || {forward:0, back:0, left:0, right:0, up:0, down:0};
+    var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
 
+    // horizontal movement
     ModAPI.player.motionX = (input.right - input.left) * flyConfig.speed;
-    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
     ModAPI.player.motionZ = (input.forward - input.back) * flyConfig.speed;
+
+    // vertical movement
+    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
 }
 
-// Noclip logic
-function noclip() {
-    ModAPI.player.canClip = noclipConfig.enabled;
+// Speed command (adds to current horizontal motion only)
+function applySpeed(num) {
+    ModAPI.player.motionX += num;
+    ModAPI.player.motionZ += num;
 }
 
 // Update events
 ModAPI.addEventListener("update", fly);
-ModAPI.addEventListener("update", noclip);
 
-// Commands
+// Fly and Speed commands
 ModAPI.addEventListener("sendchatmessage", (ev) => {
     var msg = (ev.message || "").toLowerCase();
     var args = msg.split(/\s+/);
@@ -198,37 +197,19 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
         }
     }
 
-    // Noclip command
-    if (msg.startsWith(".noclip")) {
-        ev.preventDefault = true;
-        var sub = args[1];
-
-        if (sub === "enable") {
-            noclipConfig.enabled = true;
-            ModAPI.displayToChat("[DC] Noclip enabled");
-        } else if (sub === "disable") {
-            noclipConfig.enabled = false;
-            ModAPI.displayToChat("[DC] Noclip disabled");
-        } else {
-            noclipConfig.enabled = !noclipConfig.enabled;
-            ModAPI.displayToChat("[DC] Noclip " + (noclipConfig.enabled ? "enabled" : "disabled"));
-        }
-    }
-
     // Speed command
     if (msg.startsWith(".speed")) {
         ev.preventDefault = true;
         var num = parseFloat(args[1]);
         if (!isNaN(num)) {
-            ModAPI.player.motionX += num;
-            ModAPI.player.motionY += num; // optional vertical boost
-            ModAPI.player.motionZ += num;
+            applySpeed(num);
             ModAPI.displayToChat("[DC] Speed increased by " + num);
         } else {
             ModAPI.displayToChat("[DC] Usage: .speed <number>");
         }
     }
 });
+
 
 // .help Command
 ModAPI.addEventListener("sendchatmessage", (ev) => {
