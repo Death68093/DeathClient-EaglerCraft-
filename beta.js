@@ -141,7 +141,7 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
 
 var flyConfig = {
     enabled: false,
-    speed: 20
+    speed: 1000
 };
 
 var noclipConfig = {
