@@ -8,7 +8,11 @@ var config = {
     step: {
         height: 0.5,
         enabled: false
-    }
+    },
+    speed: {
+        speed: 2,
+        enabled: false
+    }.
 };
 
 // Vclip
@@ -141,7 +145,7 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
 
 var flyConfig = {
     enabled: false,
-    speed: 1 // adjust as needed
+    speed: 200 // adjust as needed
 };
 
 // Fly logic
@@ -158,11 +162,10 @@ function fly() {
     ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
 }
 
-// Speed command (adds to current horizontal motion only)
-function applySpeed(num) {
-    ModAPI.player.motionX += num;
-    ModAPI.player.motionZ += num;
-}
+// Speed command
+ModAPI.addEventListener("sendchatmessage", (ev) => {
+    
+};
 
 // Update events
 ModAPI.addEventListener("update", fly);
@@ -232,3 +235,4 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
 
 
 ModAPI.addEventListener("update", step);
+ModAPI.addEventListener("update", speed);
