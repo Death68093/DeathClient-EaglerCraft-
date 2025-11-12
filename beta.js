@@ -49,11 +49,29 @@ function step() {
     ModAPI.player.stepHeight = config.step.height;
 }
 
-// Speed logic
-function speed() {
+// Fly
+var flyConfig = {
+    enabled: false,
+    speed: 200
+};
+
+function fly() {
+    if (!flyConfig.enabled) return;
+
+    var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
+    ModAPI.player.motionX = (input.right - input.left) * flyConfig.speed;
+    ModAPI.player.motionZ = (input.forward - input.back) * flyConfig.speed;
+    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
+}
+
+// Speed logic (horizontal only)
+function applySpeed() {
     if (!config.speed.enabled) return;
-    ModAPI.player.motionX *= config.speed.speed;
-    ModAPI.player.motionZ *= config.speed.speed;
+
+    var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0 };
+
+    ModAPI.player.motionX = (input.right - input.left) * config.speed.speed;
+    ModAPI.player.motionZ = (input.forward - input.back) * config.speed.speed;
 }
 
 // ==== COMMANDS ==== //
@@ -150,21 +168,6 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
     ModAPI.displayToChat("[DC] Usage: .tp <x> <y> <z> [--force] OR .tp <player>");
 });
 
-// Fly
-var flyConfig = {
-    enabled: false,
-    speed: 200
-};
-
-function fly() {
-    if (!flyConfig.enabled) return;
-
-    var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
-    ModAPI.player.motionX = (input.right - input.left) * flyConfig.speed;
-    ModAPI.player.motionZ = (input.forward - input.back) * flyConfig.speed;
-    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
-}
-
 // Fly & Speed commands
 ModAPI.addEventListener("sendchatmessage", (ev) => {
     var msg = (ev.message || "").toLowerCase();
@@ -232,4 +235,4 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
 // Update events
 ModAPI.addEventListener("update", step);
 ModAPI.addEventListener("update", fly);
-ModAPI.addEventListener("update", speed);
+ModAPI.addEventListener("update", applySpeed);
