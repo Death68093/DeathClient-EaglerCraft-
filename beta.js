@@ -1,7 +1,7 @@
 ModAPI.meta.title("DeathClient");
 ModAPI.meta.description("Hack your way to the top!");
 ModAPI.meta.credits("By Death68093");
-
+ModAPI.meta.version("v1.0");
 ModAPI.require("player");
 
 var config = {
@@ -11,6 +11,14 @@ var config = {
     },
     speed: {
         speed: 2,
+        enabled: false
+    },
+    jump: {
+        jump: 2,
+        enabled: false
+    },
+    fly: {
+        speed: 10,
         enabled: false
     }
 };
@@ -31,7 +39,7 @@ var config = {
         if (!force && Math.abs(yOffset) > 10) {
             ModAPI.displayToChat("[DC] You can only clip up to 10 blocks! use the --force flag to ignore!");
             return;
-        }
+        };
 
         ModAPI.player.setPosition(
             ModAPI.player.posX,
@@ -43,196 +51,271 @@ var config = {
     });
 })();
 
-// HighStep
-function step() {
-    if (!config.step.enabled) return;
-    ModAPI.player.stepHeight = config.step.height;
-}
+// Waypoints
+(function Waypoints() {
 
-// Fly
-var flyConfig = {
-    enabled: false,
-    speed: 200
-};
+    ModAPI.dedicatedServer.appendCode(async ()=>{ //The mods should probably be running on the server
+        function initDB(dbName, storeName) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 2);
+        
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        db.createObjectStore(storeName);
+                    }
+                    resolve(db);
+                };
+        
+                request.onsuccess = (event) => {
+                    const db = event.target.result;
+                    resolve(db);
+                };
+        
+                request.onerror = (event) => {
+                    reject('Error opening database: ' + event.target.errorCode);
+                };
+            });
+        }        
+        function storeString(dbName, storeName, key, value) {
+            return initDB(dbName, storeName).then((db) => {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const putRequest = store.put(value, key);
+        
+                    putRequest.onsuccess = () => {
+                        resolve('String stored successfully.');
+                    };
+        
+                    putRequest.onerror = (event) => {
+                        reject('Error storing string: ' + event.target.errorCode);
+                    };
+                });
+            });
+        }        
+        function retrieveString(dbName, storeName, key) {
+            return initDB(dbName, storeName).then((db) => {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const getRequest = store.get(key);
+        
+                    getRequest.onsuccess = () => {
+                        if (getRequest.result !== undefined) {
+                            resolve(getRequest.result);
+                        } else {
+                            resolve('');
+                        }
+                    };
+        
+                    getRequest.onerror = (event) => {
+                        resolve('');
+                    };
+                });
+            });
+        }        
+        
 
-function fly() {
-    if (!flyConfig.enabled) return;
-
-    var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
-    ModAPI.player.motionX = (input.right - input.left) * flyConfig.speed;
-    ModAPI.player.motionZ = (input.forward - input.back) * flyConfig.speed;
-    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
-}
-
-// Speed logic (horizontal only)
-function applySpeed() {
-    if (!config.speed.enabled) return;
-
-    var input = ModAPI.player.input || { forward: 0, back: 0, left: 0, right: 0 };
-
-    ModAPI.player.motionX = (input.right - input.left) * config.speed.speed;
-    ModAPI.player.motionZ = (input.forward - input.back) * config.speed.speed;
-}
-
-// ==== COMMANDS ==== //
-
-// .step Command
-ModAPI.addEventListener("sendchatmessage", (ev) => {
-    var msg = (ev.message || "").toLowerCase();
-    if (!msg.startsWith(".step")) return;
-
-    ev.preventDefault = true;
-    var args = msg.split(/\s+/);
-    var sub = args[1];
-
-    if (sub === "enable") {
-        config.step.enabled = true;
-        ModAPI.displayToChat("[DC] Step enabled");
-        return;
-    }
-
-    if (sub === "disable") {
-        config.step.enabled = false;
-        ModAPI.displayToChat("[DC] Step disabled");
-        return;
-    }
-
-    if (sub === "height") {
-        var h = parseFloat(args[2]);
-        if (!isNaN(h)) {
-            config.step.height = h;
-            ModAPI.displayToChat("[DC] Step height set to " + config.step.height);
-        } else {
-            ModAPI.displayToChat("[DC] Invalid height. Usage: .step height <number>");
-        }
-        return;
-    }
-
-    // toggle if no subcommand
-    config.step.enabled = !config.step.enabled;
-    ModAPI.displayToChat("[DC] Step " + (config.step.enabled ? "enabled" : "disabled"));
-});
-
-// .tp Command
-ModAPI.addEventListener("sendchatmessage", (ev) => {
-    var msg = (ev.message || "").toLowerCase();
-    if (!msg.startsWith(".tp")) return;
-    ev.preventDefault = true;
-
-    var args = msg.split(/\s+/);
-    var force = args.includes("--force");
-
-    // coords: .tp x y z [--force]
-    if (args[1] && args[2] && args[3]) {
-        var x = parseFloat(args[1]);
-        var y = parseFloat(args[2]);
-        var z = parseFloat(args[3]);
-
-        if (isNaN(x) || isNaN(y) || isNaN(z)) {
-            ModAPI.displayToChat("[DC] Invalid coordinates!");
-            return;
+        var data = {};
+        try {
+            data = JSON.parse(await retrieveString("waypoints_db", "waypoints", "waypoints"));
+        } catch(e) {
+            //didn't ask
         }
 
-        var dx = x - ModAPI.player.posX;
-        var dy = y - ModAPI.player.posY;
-        var dz = z - ModAPI.player.posZ;
-        var distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        if (!force && distance > 10) {
-            ModAPI.displayToChat("[DC] You can only teleport up to 10 blocks! Use --force to override.");
-            return;
+        async function saveData() {
+            await storeString("waypoints_db", "waypoints", "waypoints", JSON.stringify(data));
         }
+        
 
-        ModAPI.player.setPosition(x, y, z);
-        ModAPI.displayToChat(`[DC] Teleported to coordinates: ${x}, ${y}, ${z}` + (force ? " (force)" : ""));
-        return;
-    }
-
-    // player: .tp <playerName>
-    if (args[1]) {
-        var targetName = args[1];
-        var target = (ModAPI.world && ModAPI.world.players)
-            ? ModAPI.world.players.find(p => p.name && p.name.toLowerCase() === targetName)
-            : null;
-
-        if (!target) {
-            ModAPI.displayToChat("[DC] Player not found!");
-            return;
-        }
-
-        ModAPI.player.setPosition(target.posX, target.posY, target.posZ);
-        ModAPI.displayToChat(`[DC] Teleported to player: ${target.name}`);
-        return;
-    }
-
-    ModAPI.displayToChat("[DC] Usage: .tp <x> <y> <z> [--force] OR .tp <player>");
-});
-
-// Fly & Speed commands
-ModAPI.addEventListener("sendchatmessage", (ev) => {
-    var msg = (ev.message || "").toLowerCase();
-    var args = msg.split(/\s+/);
-
-    // Fly command
-    if (msg.startsWith(".fly")) {
-        ev.preventDefault = true;
-        var sub = args[1];
-
-        if (sub === "enable") {
-            flyConfig.enabled = true;
-            ModAPI.displayToChat("[DC] Fly enabled");
-        } else if (sub === "disable") {
-            flyConfig.enabled = false;
-            ModAPI.displayToChat("[DC] Fly disabled");
-        } else if (sub === "speed") {
-            var s = parseFloat(args[2]);
-            if (!isNaN(s)) {
-                flyConfig.speed = s;
-                ModAPI.displayToChat("[DC] Fly speed set to " + flyConfig.speed);
-            } else {
-                ModAPI.displayToChat("[DC] Invalid speed. Usage: .fly speed <number>");
+        ModAPI.addEventListener("processcommand", (e)=>{
+            if (!ModAPI.reflect.getClassById("net.minecraft.entity.player.EntityPlayerMP").instanceOf(e.sender.getRef())) {
+                return;
             }
-        } else {
-            flyConfig.enabled = !flyConfig.enabled;
-            ModAPI.displayToChat("[DC] Fly " + (flyConfig.enabled ? "enabled" : "disabled"));
-        }
+
+            if (e.command.toLowerCase().startsWith("/setwp ") && e.sender.canCommandSenderUseCommand(2, ModAPI.util.str("setwp"))) {
+                e.preventDefault = true;
+                var pos = e.sender.getPosition();
+                var name = ModAPI.util.unstring(e.sender.getName().getRef());
+                var waypointId = e.command.split(" ")[1] || "waypoint";
+                waypointId = waypointId.replace(/[^a-zA-Z0-9_]/gm, "_");
+                if (!data[name]) {
+                    data[name] = {};
+                }
+                data[name][waypointId] = [pos.x,pos.y,pos.z,e.sender.dimension];
+                saveData();
+                e.sender.addChatMessage(ModAPI.reflect.getClassById("net.minecraft.util.ChatComponentText").constructors[0](ModAPI.util.str("Set waypoint "+waypointId+".")));
+            }
+            if (e.command.toLowerCase().startsWith("/wp ") && e.sender.canCommandSenderUseCommand(2, ModAPI.util.str("wp"))) {
+                e.preventDefault = true;
+                var name = ModAPI.util.unstring(e.sender.getName().getRef());
+                var waypointId = e.command.split(" ")[1];
+                if (waypointId && Array.isArray(data?.[name]?.[waypointId])) {
+
+                    // Wildly important! regular setPosition triggers minecraft's built in anti-cheat and teleports you back in the same tick.
+                    if (data?.[name]?.[waypointId]?.[3] && (data?.[name]?.[waypointId]?.[3] !== e.sender.dimension)) {
+                        e.sender.travelToDimension(data?.[name]?.[waypointId]?.[3]);
+                    }
+                    
+                    e.sender.setPositionAndUpdate(...data?.[name]?.[waypointId]);
+
+                    e.sender.addChatMessage(ModAPI.reflect.getClassById("net.minecraft.util.ChatComponentText").constructors[0](ModAPI.util.str("Teleported to waypoint " + waypointId + ".")));
+                } else {
+                    e.sender.addChatMessage(ModAPI.reflect.getClassById("net.minecraft.util.ChatComponentText").constructors[0](ModAPI.util.str("No such waypoint.")));
+                }
+            }
+            if (e.command.toLowerCase().startsWith("/remwp ") && e.sender.canCommandSenderUseCommand(2, ModAPI.util.str("remwp"))) {
+                e.preventDefault = true;
+                var name = ModAPI.util.unstring(e.sender.getName().getRef());
+                var waypointId = e.command.split(" ")[1] || "waypoint";
+                if (!data[name]) {
+                    data[name] = {};
+                }
+                delete data[name][waypointId];
+                saveData();
+                e.sender.addChatMessage(ModAPI.reflect.getClassById("net.minecraft.util.ChatComponentText").constructors[0](ModAPI.util.str("Removed waypoint "+waypointId+".")));
+            }
+            if ((e.command.toLowerCase() === "/listwp") && e.sender.canCommandSenderUseCommand(2, ModAPI.util.str("listwp"))) {
+                e.preventDefault = true;
+                var name = ModAPI.util.unstring(e.sender.getName().getRef());
+                if (!data[name]) {
+                    data[name] = {};
+                }
+                e.sender.addChatMessage(ModAPI.reflect.getClassById("net.minecraft.util.ChatComponentText").constructors[0](ModAPI.util.str("Your waypoints: " + Object.keys(data[name]).join(", "))));
+            }
+        });
+    });
+})();
+
+// Veinminer
+(function TreeChopperMod() {
+    
+    globalThis.VEINMINERCONF = {
+        doLogs: true,
+        doOres: true,
+        doGravel: false,
+        doClay: false,
+    };
+    try {
+        Object.assign(conf, JSON.parse(localStorage.getItem("trc_mod::conf") || "{}"));
+    } catch (error) {
+        //swallow
     }
+    ModAPI.meta.config(() => {
+        var conf = document.createElement("div");
+        conf.innerHTML = `
+        <h1>Vein Miner Settings&nbsp;<a href="javascript:void(0)" onclick="this.parentElement.parentElement.remove()" style="color:red">[X]</a></h1>
+        <sub>Refresh page to apply settings</sub><br>
+        <label>Veinmine Logs: </label><input type=checkbox ${VEINMINERCONF.doLogs ? "checked" : ""} oninput="VEINMINERCONF.doLogs = this.checked; this.parentElement.__save();"></input><br>
+        <label>Veinmine Ores: </label><input type=checkbox ${VEINMINERCONF.doOres ? "checked" : ""} oninput="VEINMINERCONF.doOres = this.checked; this.parentElement.__save();"></input><br>
+        <label>Veinmine Gravel: </label><input type=checkbox ${VEINMINERCONF.doGravel ? "checked" : ""} oninput="VEINMINERCONF.doGravel = this.checked; this.parentElement.__save();"></input><br>
+        <label>Veinmine Clay: </label><input type=checkbox ${VEINMINERCONF.doClay ? "checked" : ""} oninput="VEINMINERCONF.doClay = this.checked; this.parentElement.__save();"></input><br>
+        `;
+        conf.style = "position: fixed; background-color: white; color: black; width: 100vw; height: 100vh; z-index: 256;top:0;left:0;";
+        conf.__save = () => localStorage.setItem("trc_mod::conf", JSON.stringify(VEINMINERCONF));
+        document.body.appendChild(conf);
+    });
 
-    // Speed command
-    if (msg.startsWith(".speed")) {
-        ev.preventDefault = true;
-        var num = parseFloat(args[1]);
-        if (!isNaN(num)) {
-            config.speed.enabled = true;
-            config.speed.speed = num;
-            ModAPI.displayToChat("[DC] Speed set to " + num);
-        } else {
-            ModAPI.displayToChat("[DC] Usage: .speed <number>");
-        }
-    }
-});
+    ModAPI.dedicatedServer.appendCode(`globalThis.VEINMINERCONF = ${JSON.stringify(VEINMINERCONF)};`);
 
-// .help Command
-ModAPI.addEventListener("sendchatmessage", (ev) => {
-    var msg = (ev.message || "").toLowerCase();
-    if (!msg.startsWith(".help")) return;
-    ev.preventDefault = true;
+    ModAPI.dedicatedServer.appendCode(function () {
+        ModAPI.addEventListener("bootstrap", () => {
+            const axes = [ModAPI.items.iron_axe, ModAPI.items.stone_axe, ModAPI.items.golden_axe, ModAPI.items.wooden_axe, ModAPI.items.diamond_axe].map(x => x.getRef());
+            const logs = ["log", "log2"].map(x => ModAPI.blocks[x].getRef());
+            const targettedBlockIds = [];
+            if (VEINMINERCONF.doLogs) {
+                targettedBlockIds.push("log", "log2");
+            }
+            if (VEINMINERCONF.doOres) {
+                targettedBlockIds.push("coal_ore", "gold_ore", "iron_ore", "lapis_ore", "quartz_ore", "diamond_ore", "emerald_ore", "redstone_ore", "lit_redstone_ore");
+            }
+            if (VEINMINERCONF.doGravel) {
+                targettedBlockIds.push("gravel");
+            }
+            if (VEINMINERCONF.doClay) {
+                targettedBlockIds.push("clay");
+            }
+            console.log(targettedBlockIds);
+            const valid_log_blocks = targettedBlockIds.map(x => ModAPI.blocks[x].getRef());
 
-    var commands = [
-        ".vclip <blocks> [--force] - Teleport vertically",
-        ".step enable|disable|height <value> - Toggle or set step height",
-        ".tp <x> <y> <z> [--force] - Teleport to coordinates",
-        ".tp <player> - Teleport to a player",
-        ".fly enable|disable|speed <number> - Toggle fly or set fly speed",
-        ".speed <number> - Set horizontal speed multiplier",
-        ".help - Show this help message"
-    ];
+            function stringifyBlockPos(blockPos) {
+                return blockPos.x + "," + blockPos.y + "," + blockPos.z;
+            }
+            function getNeighbors(blockPos) {
+                return [
+                    //direct neighbors
+                    blockPos.down(1),
+                    blockPos.up(1),
+                    blockPos.north(1),
+                    blockPos.south(1),
+                    blockPos.east(1),
+                    blockPos.west(1),
 
-    ModAPI.displayToChat("[DC] Available Commands:");
-    commands.forEach(cmd => ModAPI.displayToChat(cmd));
-});
+                    //edges
+                    blockPos.down(1).north(1),
+                    blockPos.down(1).south(1),
+                    blockPos.down(1).east(1),
+                    blockPos.down(1).west(1),
+                    blockPos.up(1).north(1),
+                    blockPos.up(1).south(1),
+                    blockPos.up(1).east(1),
+                    blockPos.up(1).west(1),
+                    blockPos.north(1).east(1),
+                    blockPos.north(1).west(1),
+                    blockPos.south(1).east(1),
+                    blockPos.south(1).west(1),
 
-// Update events
-ModAPI.addEventListener("update", step);
-ModAPI.addEventListener("update", fly);
-ModAPI.addEventListener("update", applySpeed);
+                    //corners
+                    blockPos.down(1).north(1).east(1),
+                    blockPos.down(1).north(1).west(1),
+                    blockPos.down(1).south(1).east(1),
+                    blockPos.down(1).south(1).west(1),
+                    blockPos.up(1).north(1).east(1),
+                    blockPos.up(1).north(1).west(1),
+                    blockPos.up(1).south(1).east(1),
+                    blockPos.up(1).south(1).west(1),
+                ];
+            }
+            async function getBlockGraph(blockPos, getBlockState, targetType) {
+                const closed = [stringifyBlockPos(blockPos)];
+                const logs = [];
+                const open = [...getNeighbors(blockPos)];
+                const maxIters = 120;
+                var i = 0;
+                while (open.length > 0 && i < maxIters) {
+                    const target = open.pop();
+
+                    closed.push(stringifyBlockPos(target));
+
+                    i++;
+                    const iBlockState = await getBlockState(target.getRef());
+                    if (iBlockState.block.getRef() === targetType) {
+                        logs.push(target);
+                        open.push(...getNeighbors(target).filter(x => !closed.includes(stringifyBlockPos(x))));
+                    }
+                }
+                return logs;
+            }
+
+            valid_log_blocks.forEach(b => {
+                const originalHarvest = b.$harvestBlock;
+                b.$harvestBlock = function ($theWorld, $player, $blockpos, $blockstate, $tileentity, ...args) {
+                    const blockState = ModAPI.util.wrap($blockstate);
+                    const player = ModAPI.util.wrap($player);
+                    if (player.isSneaking() && !ModAPI.util.isCritical() && !(logs.includes(blockState.block.getRef()) && !axes.includes(player.inventory.mainInventory[player.inventory.currentItem]?.getCorrective()?.item?.getRef()))) {
+                        ModAPI.promisify(async () => {
+                            var world = ModAPI.util.wrap($theWorld);
+                            var harvestCall = ModAPI.promisify(ModAPI.is_1_12 ? player.interactionManager.tryHarvestBlock : player.theItemInWorldManager.tryHarvestBlock);
+                            const blocks = await getBlockGraph(ModAPI.util.wrap($blockpos), ModAPI.promisify(world.getBlockState), b);
+                            for (let i = 0; i < blocks.length; i++) {
+                                await harvestCall(blocks[i].getRef());
+                            }
+                        })();
+                    }
+                    originalHarvest.apply(this, [$theWorld, $player, $blockpos, $blockstate, $tileentity, ...args]);
+                }
+            });
+        });
+    });
+})();
