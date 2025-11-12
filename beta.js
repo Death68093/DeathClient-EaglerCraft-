@@ -35,7 +35,9 @@ var config = {
 mod.addEventListener("sendchatmessage", (e) => {
     var msg = e.message.toLowerCase();
     var args = msg.split(" ");
-    if (msg.startsWith(".")) { e.preventDefault() };
+    if (msg.startsWith(".")) { 
+        e.preventDefault = true;
+    };
 
     // === SPEED === //
     if (msg.startsWith(".speed")) {
