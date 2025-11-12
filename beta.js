@@ -141,7 +141,7 @@ ModAPI.addEventListener("sendchatmessage", (ev) => {
 
 var flyConfig = {
     enabled: false,
-    speed: 0.5
+    speed: 20
 };
 
 var noclipConfig = {
@@ -155,7 +155,7 @@ function fly() {
     var input = ModAPI.player.input || {forward:0, back:0, left:0, right:0, up:0, down:0};
 
     ModAPI.player.motionX = (input.right - input.left) * flyConfig.speed;
-    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed; // Y for vertical
+    ModAPI.player.motionY = (input.up - input.down) * flyConfig.speed;
     ModAPI.player.motionZ = (input.forward - input.back) * flyConfig.speed;
 }
 
