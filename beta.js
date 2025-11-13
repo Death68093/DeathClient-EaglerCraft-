@@ -5,6 +5,7 @@ mod.meta.credits("By Death68093\n - Creator of Everything...")
 mod.meta.version("V1.0")
 
 mod.require("player")
+mod.require("world")
 
 // ==== Config ==== //
 var config = {
@@ -27,7 +28,11 @@ var config = {
         step: {
             stepHeight: 0.5,
             enabled: false
-        }
+        },
+         esp: {
+            enabled: false,
+            target: null
+        },
     },
 };
 
@@ -104,3 +109,57 @@ function step() {
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
 mod.addEventListener("update", step);
+
+
+
+mod.addEventListener("sendchatmessage", (e) => {
+    const msg = e.message.toLowerCase();
+    const args = msg.split(" ");
+    if (!msg.startsWith(".")) return;
+    e.preventDefault = true;
+
+    if (msg.startsWith(".esp")) {
+        const sub = args[1];
+        const target = args[2];
+
+        if (sub === "enable") {
+            config.hacks.esp.enabled = true;
+            config.hacks.esp.target = target || null;
+            mod.displayToChat(`[DC] ESP Enabled${target ? " for " + target : ""}`);
+        } 
+        else if (sub === "disable") {
+            config.hacks.esp.enabled = false;
+            config.hacks.esp.target = null;
+            mod.displayToChat("[DC] ESP Disabled");
+        } 
+        else {
+            mod.displayToChat("[DC] Usage: .esp <enable|disable> [specific_target]");
+        }
+    }
+});
+
+// === KEYBIND (Z) === //
+mod.addEventListener("keydown", (e) => {
+    if (e.key === "z") {
+        config.hacks.esp.enabled = !config.hacks.esp.enabled;
+        mod.displayToChat(`[DC] ESP ${config.hacks.esp.enabled ? "Enabled" : "Disabled"}`);
+    }
+});
+
+// === ESP DRAW === //
+function drawESP() {
+    if (!config.hacks.esp.enabled) return;
+    const players = mod.world.players;
+    for (let i = 0; i < players.length; i++) {
+        const p = players[i];
+        if (p === mod.player) continue;
+
+        if (config.hacks.esp.target && p.name.toLowerCase() !== config.hacks.esp.target.toLowerCase()) continue;
+
+        const pos = p.pos;
+        const color = [1, 0, 0, 1]; // red box
+        mod.drawBox(pos.x - 0.5, pos.y, pos.z - 0.5, pos.x + 0.5, pos.y + 1.8, pos.z + 0.5, color);
+    }
+}
+mod.addEventListener("render3d", drawESP);
+
