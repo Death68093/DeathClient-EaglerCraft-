@@ -33,75 +33,77 @@ var config = {
 
 // ==== Commands ==== //
 mod.addEventListener("sendchatmessage", (e) => {
-    var msg = e.message.toLowerCase();
-    var args = msg.split(" ");
-    if (msg.startsWith(".")) { 
-        e.preventDefault();
-    };
+    var raw = e.message || "";
+    var msg = raw.toLowerCase();
 
-    // === SPEED === //
-    if (msg.startsWith(".speed")) {
-        var newSpeed = parseFloat(args[1]) || 2
-        if (!isNaN(newSpeed)) {
-            config.hacks.speed.speed = newSpeed;
-            mod.displayChatMessage(`[DC] Speed Set to: ${newSpeed}`)
+    // try to cancel the chat message using multiple fallbacks
+    if (msg.startsWith(".")) {
+        if (typeof e.preventDefault === "function") {
+            e.preventDefault();
+        } else if (typeof e.cancelEvent === "function") {
+            e.cancelEvent();
+        } else if (typeof e.setCancelled === "function") {
+            e.setCancelled(true);
+        } else if ("cancel" in e) {
+            try { e.cancel = true } catch (err) {}
+        } else if ("canceled" in e) {
+            try { e.canceled = true } catch (err) {}
+        }
+        // continue to handle the command
+    } else {
+        return; // not a command
+    }
+
+    var parts = msg.slice(1).split(/\s+/); // remove leading '.' and split
+    var cmd = parts.shift();
+    var arg = parts[0];
+
+    function parseArgNumber(a, fallback) {
+        if (typeof a === "undefined") return null;
+        var n = parseFloat(a);
+        return isNaN(n) ? null : n;
+    }
+
+    if (cmd === "speed") {
+        var n = parseArgNumber(arg);
+        if (n !== null) {
+            config.hacks.speed.speed = n;
+            mod.displayChatMessage(`[DC] Speed Set to: ${n}`)
         } else {
             config.hacks.speed.enabled = !config.hacks.speed.enabled;
-            var t = "Enabled"
-            if (config.hacks.speed.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
-            mod.displayChatMessage(`[DC] Speed ${t}`)
+            mod.displayChatMessage(`[DC] Speed ${config.hacks.speed.enabled ? "Enabled" : "Disabled"}`)
         }
-    };
+    }
 
-    // === JUMP === //
-    if (msg.startsWith(".jump")) {
-        var newJump = parseFloat(args[1]) || 2
-        if (!isNaN(newJump)) {
-            config.hacks.jump.jump = newJump;
-            mod.displayChatMessage(`[DC] Jump Set to: ${newJump}`)
+    if (cmd === "jump") {
+        var n = parseArgNumber(arg);
+        if (n !== null) {
+            config.hacks.jump.jump = n;
+            mod.displayChatMessage(`[DC] Jump Set to: ${n}`)
         } else {
             config.hacks.jump.enabled = !config.hacks.jump.enabled;
-            var t = "Enabled"
-            if (config.hacks.jump.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
-            mod.displayChatMessage(`[DC] Jump ${t}`)
+            mod.displayChatMessage(`[DC] Jump ${config.hacks.jump.enabled ? "Enabled" : "Disabled"}`)
         }
-    };
+    }
 
-    // === STEP === //
-    if (msg.startsWith(".step")) {
-        var newStep = parseFloat(args[1]) || 2
-        if (!isNaN(newStep)) {
-            config.hacks.step.step = newStep;
-            mod.displayChatMessage(`[DC] Step Set to: ${newStep}`)
+    if (cmd === "step") {
+        var n = parseArgNumber(arg);
+        if (n !== null) {
+            config.hacks.step.stepHeight = n;
+            mod.displayChatMessage(`[DC] Step Height Set to: ${n}`)
         } else {
             config.hacks.step.enabled = !config.hacks.step.enabled;
-            var t = "Enabled"
-            if (config.hacks.step.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
-            mod.displayChatMessage(`[DC] Step ${t}`)
+            mod.displayChatMessage(`[DC] Step ${config.hacks.step.enabled ? "Enabled" : "Disabled"}`)
         }
-    };
-
+    }
 });
 
-
-
 function stepe() {
-    if(!config.hacks.step.enabled) {
+    if (!mod.player) return;
+    if (!config.hacks.step.enabled) {
         mod.player.stepHeight = 0.5;
-        return
-    };
+        return;
+    }
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
-ModAPI.addEventListener("update", stepHackUpdateCode);
+ModAPI.addEventListener("update", stepe);
