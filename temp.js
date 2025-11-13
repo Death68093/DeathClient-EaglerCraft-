@@ -6,4 +6,13 @@ mod.meta.version("V1.0")
 
 mod.require("player")
 
-mod.displayToChat(JSON.stringify(mod.player, null, 2))
+mod.addEventListener("sendchatmessage", (e) => {
+    const msg = e.message.toLowerCase();
+    if (!msg.startsWith(".")) return;
+    e.preventDefault = true;
+
+    if (msg.startsWith(".player")) {
+        mod.displayToChat(JSON.stringify(mod.player, null, 2));
+    }
+});
+
