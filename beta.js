@@ -97,11 +97,11 @@ mod.addEventListener("sendchatmessage", (e) => {
 
 
 
-function stepe() {
+function step() {
     if(!config.hacks.step.enabled) {
         mod.player.stepHeight = 0.5;
         return
     };
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
-ModAPI.addEventListener("update", stepHackUpdateCode);
+ModAPI.addEventListener("update", step);
