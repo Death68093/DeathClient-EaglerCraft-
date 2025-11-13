@@ -1,7 +1,7 @@
 const mod = ModAPI
 mod.meta.title("DeathClient")
 mod.meta.description("The best hacked client on EaglerForge!")
-mod.meta.credits("DeathClient", "By Death68093\n - Creator of everything...")
+mod.meta.credits("By Death68093\n - Creator of Everything...")
 mod.meta.version("V1.0")
 
 mod.require("player")
@@ -77,10 +77,11 @@ mod.addEventListener("sendchatmessage", (e) => {
 
     // === STEP === //
     if (msg.startsWith(".step")) {
-        var newStep = parseFloat(args[2]) || 2
-        if (args[1] == "height" && !isNaN(newStep)) {
-            config.hacks.step.step = newStep;
-            mod.displayToChat(`[DC] Step Set to: ${newStep}`)
+        var sub = args[1];
+        var newStep = parseFloat(args[2]);
+        if (sub === "height" && !isNaN(newStep)) {
+            config.hacks.step.stepHeight = newStep;
+            mod.displayToChat(`[DC] Step height set to: ${newStep}`)
         } else {
             config.hacks.step.enabled = !config.hacks.step.enabled;
             var t = "Enabled"
@@ -95,8 +96,6 @@ mod.addEventListener("sendchatmessage", (e) => {
 
 });
 
-
-
 function step() {
     if(!config.hacks.step.enabled) {
         mod.player.stepHeight = 0.5;
@@ -104,4 +103,4 @@ function step() {
     };
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
-ModAPI.addEventListener("update", step);
+mod.addEventListener("update", step);
