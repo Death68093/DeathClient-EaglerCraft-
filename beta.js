@@ -33,6 +33,9 @@ var config = {
             enabled: false,
             target: null
         },
+        nofall: {
+            enabled: false,
+        }
     },
 };
 
@@ -98,6 +101,16 @@ mod.addEventListener("sendchatmessage", (e) => {
             mod.displayToChat(`[DC] Step ${t}`)
         }
     };
+    if (msg.startsWith(".nofall")) {
+        config.hacks.nofall.enabled = !config.hacks.nofall.enabled;
+            var t = "Enabled"
+            if (config.hacks.nofall.enabled) {
+                t = "Enabled";
+            } else {
+                t = "Disabled";
+            };
+            mod.displayToChat(`[DC] NoFall ${t}`)
+    }
 
 });
 
@@ -108,8 +121,6 @@ function step() {
     };
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
-mod.addEventListener("update", step);
-
 
 
 mod.addEventListener("sendchatmessage", (e) => {
@@ -161,5 +172,15 @@ function drawESP() {
         mod.drawBox(pos.x - 0.5, pos.y, pos.z - 0.5, pos.x + 0.5, pos.y + 1.8, pos.z + 0.5, color);
     }
 }
-mod.addEventListener("render3d", drawESP);
 
+function nofall() {
+    if (!config.hacks.nofall.enabled) return;
+
+    mod.player.fallDistance = 0;
+    if (mod.player.motionY < 0) {
+        mod.player.onGround = true;
+    }
+};
+
+mod.addEventListener("update", step);
+mod.addEventListener("render3d", drawESP);
