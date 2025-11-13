@@ -36,25 +36,14 @@ mod.addEventListener("sendchatmessage", (e) => {
     var raw = e.message || "";
     var msg = raw.toLowerCase();
 
-    // try to cancel the chat message using multiple fallbacks
+    
     if (msg.startsWith(".")) {
-        if (typeof e.preventDefault === "function") {
-            e.preventDefault();
-        } else if (typeof e.cancelEvent === "function") {
-            e.cancelEvent();
-        } else if (typeof e.setCancelled === "function") {
-            e.setCancelled(true);
-        } else if ("cancel" in e) {
-            try { e.cancel = true } catch (err) {}
-        } else if ("canceled" in e) {
-            try { e.canceled = true } catch (err) {}
-        }
-        // continue to handle the command
+        e.PreventDefault = true;
     } else {
         return; // not a command
     }
 
-    var parts = msg.slice(1).split(/\s+/); // remove leading '.' and split
+    var parts = msg.slice(1).split(/\s+/);
     var cmd = parts.shift();
     var arg = parts[0];
 
