@@ -33,66 +33,75 @@ var config = {
 
 // ==== Commands ==== //
 mod.addEventListener("sendchatmessage", (e) => {
-    var raw = e.message || "";
-    var msg = raw.toLowerCase();
+    var msg = e.message.toLowerCase();
+    var args = msg.split(" ");
+    if (msg.startsWith(".")) { 
+        e.preventDefault = true;
+    };
 
-    
-    if (msg.startsWith(".")) {
-        e.PreventDefault = true;
-    } else {
-        return; // not a command
-    }
-
-    var parts = msg.slice(1).split(/\s+/);
-    var cmd = parts.shift();
-    var arg = parts[0];
-
-    function parseArgNumber(a, fallback) {
-        if (typeof a === "undefined") return null;
-        var n = parseFloat(a);
-        return isNaN(n) ? null : n;
-    }
-
-    if (cmd === "speed") {
-        var n = parseArgNumber(arg);
-        if (n !== null) {
-            config.hacks.speed.speed = n;
-            mod.displayChatMessage(`[DC] Speed Set to: ${n}`)
+    // === SPEED === //
+    if (msg.startsWith(".speed")) {
+        var newSpeed = parseFloat(args[1]) || 2
+        if (!isNaN(newSpeed)) {
+            config.hacks.speed.speed = newSpeed;
+            mod.displayToChat(`[DC] Speed Set to: ${newSpeed}`)
         } else {
             config.hacks.speed.enabled = !config.hacks.speed.enabled;
-            mod.displayChatMessage(`[DC] Speed ${config.hacks.speed.enabled ? "Enabled" : "Disabled"}`)
+            var t = "Enabled"
+            if (config.hacks.speed.enabled) {
+                t = "Enabled";
+            } else {
+                t = "Disabled";
+            };
+            mod.displayToChat(`[DC] Speed ${t}`)
         }
-    }
+    };
 
-    if (cmd === "jump") {
-        var n = parseArgNumber(arg);
-        if (n !== null) {
-            config.hacks.jump.jump = n;
-            mod.displayChatMessage(`[DC] Jump Set to: ${n}`)
+    // === JUMP === //
+    if (msg.startsWith(".jump")) {
+        var newJump = parseFloat(args[1]) || 2
+        if (!isNaN(newJump)) {
+            config.hacks.jump.jump = newJump;
+            mod.displayToChat(`[DC] Jump Set to: ${newJump}`)
         } else {
             config.hacks.jump.enabled = !config.hacks.jump.enabled;
-            mod.displayChatMessage(`[DC] Jump ${config.hacks.jump.enabled ? "Enabled" : "Disabled"}`)
+            var t = "Enabled"
+            if (config.hacks.jump.enabled) {
+                t = "Enabled";
+            } else {
+                t = "Disabled";
+            };
+            mod.displayToChat(`[DC] Jump ${t}`)
         }
-    }
+    };
 
-    if (cmd === "step") {
-        var n = parseArgNumber(arg);
-        if (n !== null) {
-            config.hacks.step.stepHeight = n;
-            mod.displayChatMessage(`[DC] Step Height Set to: ${n}`)
+    // === STEP === //
+    if (msg.startsWith(".step")) {
+        var newStep = parseFloat(args[1]) || 2
+        if (!isNaN(newStep)) {
+            config.hacks.step.step = newStep;
+            mod.displayToChat(`[DC] Step Set to: ${newStep}`)
         } else {
             config.hacks.step.enabled = !config.hacks.step.enabled;
-            mod.displayChatMessage(`[DC] Step ${config.hacks.step.enabled ? "Enabled" : "Disabled"}`)
+            var t = "Enabled"
+            if (config.hacks.step.enabled) {
+                t = "Enabled";
+            } else {
+                t = "Disabled";
+            };
+            mod.displayToChat(`[DC] Step ${t}`)
         }
-    }
+    };
+
 });
 
+
+
 function stepe() {
-    if (!mod.player) return;
-    if (!config.hacks.step.enabled) {
+    if(!config.hacks.step.enabled) {
         mod.player.stepHeight = 0.5;
-        return;
-    }
+        return
+    };
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
-ModAPI.addEventListener("update", stepe);
+ModAPI.addEventListener("update", stepHackUpdateCode);
