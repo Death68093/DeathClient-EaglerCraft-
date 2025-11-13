@@ -77,8 +77,8 @@ mod.addEventListener("sendchatmessage", (e) => {
 
     // === STEP === //
     if (msg.startsWith(".step")) {
-        var newStep = parseFloat(args[1]) || 2
-        if (!isNaN(newStep)) {
+        var newStep = parseFloat(args[2]) || 2
+        if (args[1] == "height" && !isNaN(newStep)) {
             config.hacks.step.step = newStep;
             mod.displayToChat(`[DC] Step Set to: ${newStep}`)
         } else {
