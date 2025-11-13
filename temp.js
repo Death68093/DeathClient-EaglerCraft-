@@ -5,4 +5,5 @@ mod.meta.credits("By Death68093\n - Creator of Everything...")
 mod.meta.version("V1.0")
 
 mod.require("player")
-mod.displayToChat(mod.player)
+
+mod.displayToChat(JSON.stringify(mod.player, null, 2))
