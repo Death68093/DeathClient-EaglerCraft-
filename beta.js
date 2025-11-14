@@ -130,8 +130,8 @@ function jumpHack() {
 function nofallHack() {
     if (!config.hacks.nofall.enabled) return;
     const player = mod.player.getCorrective();
-    if (player.fallDistance > 2) {
-        player.motionY = 0;
+    if (player.fallDistance > 3) {
+        player.motionY = 0.1;
         player.fallDistance = 0;
     }
 }
