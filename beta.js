@@ -43,9 +43,7 @@ var config = {
 mod.addEventListener("sendchatmessage", (e) => {
     var msg = e.message.toLowerCase();
     var args = msg.split(" ");
-    if (msg.startsWith(".")) { 
-        e.preventDefault = true;
-    };
+    if (msg.startsWith(".")) e.preventDefault = true;
 
     // === SPEED === //
     if (msg.startsWith(".speed")) {
@@ -58,7 +56,7 @@ mod.addEventListener("sendchatmessage", (e) => {
             var t = config.hacks.speed.enabled ? "Enabled" : "Disabled";
             mod.displayToChat(`[DC] Speed ${t}`)
         }
-    };
+    }
 
     // === JUMP === //
     if (msg.startsWith(".jump")) {
@@ -71,7 +69,7 @@ mod.addEventListener("sendchatmessage", (e) => {
             var t = config.hacks.jump.enabled ? "Enabled" : "Disabled";
             mod.displayToChat(`[DC] Jump ${t}`)
         }
-    };
+    }
 
     // === STEP === //
     if (msg.startsWith(".step")) {
@@ -85,7 +83,7 @@ mod.addEventListener("sendchatmessage", (e) => {
             var t = config.hacks.step.enabled ? "Enabled" : "Disabled";
             mod.displayToChat(`[DC] Step ${t}`)
         }
-    };
+    }
 
     // === NOFALL === //
     if (msg.startsWith(".nofall")) {
@@ -97,7 +95,7 @@ mod.addEventListener("sendchatmessage", (e) => {
 
 // ==== Hack Functions ==== //
 function step() {
-    if(!config.hacks.step.enabled) {
+    if (!config.hacks.step.enabled) {
         mod.player.stepHeight = 0.5;
         return;
     }
@@ -106,25 +104,35 @@ function step() {
 
 function speedHack() {
     if (!config.hacks.speed.enabled) return;
-    // Move player along X/Z based on motion direction
-    let yaw = mod.player.rotationYaw * Math.PI / 180;
-    let forward = config.hacks.speed.speed;
-    mod.player.motionX += -Math.sin(yaw) * forward;
-    mod.player.motionZ += Math.cos(yaw) * forward;
+
+    const player = mod.player.getCorrective();
+    const forward = player.moveForward || 0;
+    const strafe = player.moveStrafing || 0;
+    if (forward === 0 && strafe === 0) return;
+
+    const yaw = player.rotationYaw * Math.PI / 180;
+
+    let motionX = (-Math.sin(yaw) * forward + Math.cos(yaw) * strafe) * config.hacks.speed.speed;
+    let motionZ = (Math.cos(yaw) * forward + Math.sin(yaw) * strafe) * config.hacks.speed.speed;
+
+    player.motionX = motionX;
+    player.motionZ = motionZ;
 }
 
 function jumpHack() {
     if (!config.hacks.jump.enabled) return;
-    if (mod.player.onGround) {
-        mod.player.motionY = config.hacks.jump.jump;
+    const player = mod.player.getCorrective();
+    if (player.onGround) {
+        player.motionY = config.hacks.jump.jump;
     }
 }
 
 function nofallHack() {
     if (!config.hacks.nofall.enabled) return;
-    if (mod.player.fallDistance > 2) {
-        mod.player.motionY = 0;
-        mod.player.fallDistance = 0;
+    const player = mod.player.getCorrective();
+    if (player.fallDistance > 2) {
+        player.motionY = 0;
+        player.fallDistance = 0;
     }
 }
 
@@ -135,4 +143,3 @@ mod.addEventListener("update", () => {
     jumpHack();
     nofallHack();
 });
-
