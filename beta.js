@@ -29,7 +29,7 @@ var config = {
             stepHeight: 0.5,
             enabled: false
         },
-         esp: {
+        esp: {
             enabled: false,
             target: null
         },
@@ -49,36 +49,26 @@ mod.addEventListener("sendchatmessage", (e) => {
 
     // === SPEED === //
     if (msg.startsWith(".speed")) {
-        var newSpeed = parseFloat(args[1]) || 2
+        var newSpeed = parseFloat(args[1]);
         if (!isNaN(newSpeed)) {
             config.hacks.speed.speed = newSpeed;
             mod.displayToChat(`[DC] Speed Set to: ${newSpeed}`)
         } else {
             config.hacks.speed.enabled = !config.hacks.speed.enabled;
-            var t = "Enabled"
-            if (config.hacks.speed.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
+            var t = config.hacks.speed.enabled ? "Enabled" : "Disabled";
             mod.displayToChat(`[DC] Speed ${t}`)
         }
     };
 
     // === JUMP === //
     if (msg.startsWith(".jump")) {
-        var newJump = parseFloat(args[1]) || 2
+        var newJump = parseFloat(args[1]);
         if (!isNaN(newJump)) {
             config.hacks.jump.jump = newJump;
             mod.displayToChat(`[DC] Jump Set to: ${newJump}`)
         } else {
             config.hacks.jump.enabled = !config.hacks.jump.enabled;
-            var t = "Enabled"
-            if (config.hacks.jump.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
+            var t = config.hacks.jump.enabled ? "Enabled" : "Disabled";
             mod.displayToChat(`[DC] Jump ${t}`)
         }
     };
@@ -92,95 +82,57 @@ mod.addEventListener("sendchatmessage", (e) => {
             mod.displayToChat(`[DC] Step height set to: ${newStep}`)
         } else {
             config.hacks.step.enabled = !config.hacks.step.enabled;
-            var t = "Enabled"
-            if (config.hacks.step.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
+            var t = config.hacks.step.enabled ? "Enabled" : "Disabled";
             mod.displayToChat(`[DC] Step ${t}`)
         }
     };
+
+    // === NOFALL === //
     if (msg.startsWith(".nofall")) {
         config.hacks.nofall.enabled = !config.hacks.nofall.enabled;
-            var t = "Enabled"
-            if (config.hacks.nofall.enabled) {
-                t = "Enabled";
-            } else {
-                t = "Disabled";
-            };
-            mod.displayToChat(`[DC] NoFall ${t}`)
+        var t = config.hacks.nofall.enabled ? "Enabled" : "Disabled";
+        mod.displayToChat(`[DC] NoFall ${t}`)
     }
-
 });
 
+// ==== Hack Functions ==== //
 function step() {
     if(!config.hacks.step.enabled) {
         mod.player.stepHeight = 0.5;
-        return
-    };
+        return;
+    }
     mod.player.stepHeight = config.hacks.step.stepHeight;
 }
 
+function speedHack() {
+    if (!config.hacks.speed.enabled) return;
+    // Move player along X/Z based on motion direction
+    let yaw = mod.player.rotationYaw * Math.PI / 180;
+    let forward = config.hacks.speed.speed;
+    mod.player.motionX += -Math.sin(yaw) * forward;
+    mod.player.motionZ += Math.cos(yaw) * forward;
+}
 
-mod.addEventListener("sendchatmessage", (e) => {
-    const msg = e.message.toLowerCase();
-    const args = msg.split(" ");
-    if (!msg.startsWith(".")) return;
-    e.preventDefault = true;
-
-    if (msg.startsWith(".esp")) {
-        const sub = args[1];
-        const target = args[2];
-
-        if (sub === "enable") {
-            config.hacks.esp.enabled = true;
-            config.hacks.esp.target = target || null;
-            mod.displayToChat(`[DC] ESP Enabled${target ? " for " + target : ""}`);
-        } 
-        else if (sub === "disable") {
-            config.hacks.esp.enabled = false;
-            config.hacks.esp.target = null;
-            mod.displayToChat("[DC] ESP Disabled");
-        } 
-        else {
-            mod.displayToChat("[DC] Usage: .esp <enable|disable> [specific_target]");
-        }
-    }
-});
-
-// === KEYBIND (Z) === //
-mod.addEventListener("keydown", (e) => {
-    if (e.key === "z") {
-        config.hacks.esp.enabled = !config.hacks.esp.enabled;
-        mod.displayToChat(`[DC] ESP ${config.hacks.esp.enabled ? "Enabled" : "Disabled"}`);
-    }
-});
-
-// === ESP DRAW === //
-function drawESP() {
-    if (!config.hacks.esp.enabled) return;
-    const players = mod.world.players;
-    for (let i = 0; i < players.length; i++) {
-        const p = players[i];
-        if (p === mod.player) continue;
-
-        if (config.hacks.esp.target && p.name.toLowerCase() !== config.hacks.esp.target.toLowerCase()) continue;
-
-        const pos = p.pos;
-        const color = [1, 0, 0, 1]; // red box
-        mod.drawBox(pos.x - 0.5, pos.y, pos.z - 0.5, pos.x + 0.5, pos.y + 1.8, pos.z + 0.5, color);
+function jumpHack() {
+    if (!config.hacks.jump.enabled) return;
+    if (mod.player.onGround) {
+        mod.player.motionY = config.hacks.jump.jump;
     }
 }
 
-function nofall() {
+function nofallHack() {
     if (!config.hacks.nofall.enabled) return;
-
-    mod.player.fallDistance = 0;
-    if (mod.player.motionY < 0) {
-        mod.player.onGround = true;
+    if (mod.player.fallDistance > 2) {
+        mod.player.motionY = 0;
+        mod.player.fallDistance = 0;
     }
-};
+}
 
-mod.addEventListener("update", step);
-mod.addEventListener("render3d", drawESP);
+// ==== Update Event ==== //
+mod.addEventListener("update", () => {
+    step();
+    speedHack();
+    jumpHack();
+    nofallHack();
+});
+
