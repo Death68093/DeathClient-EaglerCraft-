@@ -1,7 +1,7 @@
 //all versions
 const versionData = {
-    "1.8": ["v1.0.0", "v1.0.1"],
-    "1.12": ["v1.0.0", "v1.0.1"]
+    "1.8": ["0.0.1-indev"],
+    "1.12": []
 };
 const menu = document.getElementById("version-menu");
 
