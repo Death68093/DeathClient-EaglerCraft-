@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: white;
+    padding: 20px;
+}
+
+.version-block {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #1e1e1e;
+    border-radius: 8px;
+}
+
+.version-block h2 {
+    margin-top: 0;
+}
+
+button {
+    background: #333;
+    border: 1px solid #555;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 6px;
+}
+
+button:hover {
+    background: #444;
+}
