@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeathClient JS Plugin Docs</title>
+<style>
+  :root {
+    --bg:       #0d0d0d;
+    --bg2:      #141414;
+    --bg3:      #1a1a1a;
+    --border:   #2a2a2a;
+    --red:      #cc0000;
+    --red2:     #ff3333;
+    --green:    #00cc66;
+    --blue:     #3399ff;
+    --yellow:   #ffcc00;
+    --purple:   #aa66ff;
+    --cyan:     #00cccc;
+    --text:     #e0e0e0;
+    --muted:    #777;
+    --code-bg:  #111;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ---- layout ---- */
+  .shell { display: flex; min-height: 100vh; }
+
+  nav {
+    width: 240px;
+    min-width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 24px;
+  }
+
+  nav .logo {
+    padding: 20px 16px 14px;
+    border-bottom: 2px solid var(--red);
+    margin-bottom: 8px;
+  }
+  nav .logo span { color: var(--red2); font-weight: 700; font-size: 17px; letter-spacing: .5px; }
+  nav .logo small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  nav a {
+    display: block;
+    padding: 6px 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color .15s, background .15s;
+    border-left: 2px solid transparent;
+  }
+  nav a:hover    { color: var(--text); background: var(--bg3); }
+  nav a.active   { color: var(--red2); border-left-color: var(--red); background: #1c0a0a; }
+  nav .section-label {
+    padding: 12px 20px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #444;
+  }
+
+  main {
+    flex: 1;
+    padding: 40px 48px;
+    max-width: 900px;
+  }
+
+  /* ---- typography ---- */
+  h1 { font-size: 28px; color: var(--red2); margin-bottom: 6px; }
+  h2 { font-size: 21px; color: var(--text); margin: 44px 0 14px; padding-top: 10px;
+       border-top: 1px solid var(--border); }
+  h3 { font-size: 16px; color: var(--cyan); margin: 28px 0 8px; }
+  h4 { font-size: 14px; color: var(--yellow); margin: 18px 0 6px; }
+  p  { margin-bottom: 12px; color: #bbb; }
+  ul, ol { padding-left: 22px; margin-bottom: 12px; color: #bbb; }
+  li { margin-bottom: 4px; }
+  a  { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .lead { font-size: 16px; color: #aaa; margin-bottom: 24px; }
+
+  /* ---- badges ---- */
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .badge-red    { background: #3a0000; color: var(--red2); }
+  .badge-green  { background: #003320; color: var(--green); }
+  .badge-blue   { background: #001e3a; color: var(--blue); }
+  .badge-yellow { background: #2e2200; color: var(--yellow); }
+  .badge-purple { background: #1e0a3a; color: var(--purple); }
+
+  /* ---- code ---- */
+  code {
+    background: var(--code-bg);
+    border: 1px solid #2a2a2a;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 13px;
+    color: #f8c555;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    tab-size: 2;
+  }
+
+  /* Syntax colours inside <pre> via spans */
+  pre .kw  { color: #cc66ff; }    /* keyword */
+  pre .fn  { color: #66aaff; }    /* function / method */
+  pre .str { color: #88cc44; }    /* string */
+  pre .num { color: #ff9933; }    /* number */
+  pre .cmt { color: #555; font-style: italic; } /* comment */
+  pre .key { color: #f8c555; }    /* object key */
+  pre .typ { color: #00cccc; }    /* type / class */
+  pre .dc  { color: #ff4444; font-weight: bold; } /* DeathClient */
+
+  /* ---- tables ---- */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 24px; font-size: 13.5px; }
+  thead th {
+    background: #1a1a1a;
+    color: var(--text);
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--red);
+    font-size: 12px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+  }
+  tbody tr:nth-child(even) { background: #111; }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e1e1e;
+    vertical-align: top;
+  }
+  tbody td:first-child { color: #f8c555; font-family: monospace; white-space: nowrap; }
+  tbody td:nth-child(2){ color: var(--cyan); font-family: monospace; white-space: nowrap; }
+  tbody td:last-child  { color: #aaa; }
+
+  /* ---- callout boxes ---- */
+  .callout {
+    border-left: 3px solid;
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .callout p { margin: 0; }
+  .callout-tip    { border-color: var(--green);  background: #001a0d; color: #99eecc; }
+  .callout-warn   { border-color: var(--yellow); background: #1a1200; color: #ffe066; }
+  .callout-danger { border-color: var(--red);    background: #1a0000; color: #ff8888; }
+  .callout-info   { border-color: var(--blue);   background: #001226; color: #88bbff; }
+
+  /* ---- API entry ---- */
+  .api-entry {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .api-entry .sig {
+    background: #161616;
+    padding: 11px 16px;
+    font-family: monospace;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .api-entry .sig .name { color: var(--blue); font-weight: 700; }
+  .api-entry .sig .params { color: #ccc; }
+  .api-entry .sig .ret { color: var(--green); margin-left: auto; font-size: 12px; }
+  .api-entry .body {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #aaa;
+  }
+  .api-entry .body p { margin-bottom: 6px; }
+
+  /* ---- top hero ---- */
+  .hero {
+    background: linear-gradient(135deg, #1a0000 0%, #0d0d0d 60%);
+    border: 1px solid #330000;
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin-bottom: 36px;
+  }
+  .hero h1 { margin-bottom: 8px; }
+  .hero .version { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+  /* ---- section anchor ---- */
+  h2[id], h3[id] { scroll-margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ================================================================
+     SIDEBAR NAV
+================================================================ -->
+<nav>
+  <div class="logo">
+    <span>DeathClient</span>
+    <small>JS Plugin API · v1.2.0</small>
+  </div>
+
+  <div class="section-label">Getting Started</div>
+  <a href="#overview">Overview</a>
+  <a href="#loading">Loading Plugins</a>
+  <a href="#metadata">Metadata Header</a>
+  <a href="#hello-world">Hello World</a>
+
+  <div class="section-label">Core Concepts</div>
+  <a href="#lifecycle">Mod Lifecycle</a>
+  <a href="#settings">Settings</a>
+  <a href="#events">Events</a>
+  <a href="#world-data">World Data</a>
+
+  <div class="section-label">API Reference</div>
+  <a href="#api-register">Registration</a>
+  <a href="#api-chat">Chat &amp; Commands</a>
+  <a href="#api-mods">Mod Control</a>
+  <a href="#api-data">World Data</a>
+  <a href="#api-events">Event Bus</a>
+  <a href="#api-log">Logging</a>
+
+  <div class="section-label">Examples</div>
+  <a href="#ex-hud">Custom HUD Line</a>
+  <a href="#ex-auto">Auto-Action</a>
+  <a href="#ex-react">React to Chat</a>
+  <a href="#ex-settings">Rich Settings</a>
+  <a href="#ex-multi">Multi-Mod Plugin</a>
+
+  <div class="section-label">Reference</div>
+  <a href="#ref-categories">Categories</a>
+  <a href="#ref-player">Player Object</a>
+  <a href="#ref-world">World Object</a>
+  <a href="#ref-server">Server Object</a>
+  <a href="#ref-limits">Limits &amp; Gotchas</a>
+</nav>
+
+<!-- ================================================================
+     MAIN CONTENT
+================================================================ -->
+<main>
+
+<!-- ---- HERO ---- -->
+<div class="hero">
+  <h1>DeathClient JS Plugin API</h1>
+  <div class="version">v1.2.0 &nbsp;·&nbsp; EaglerCraft 1.8 &nbsp;·&nbsp; by Death68093</div>
+  <p class="lead" style="margin:0">
+    Write Minecraft mods in plain JavaScript — no Java, no build tools, no restarts.
+    Paste your script or load a <code>.js</code> file and it runs live inside the game.
+  </p>
+</div>
+
+<!-- ================================================================ -->
+<h2 id="overview">Overview</h2>
+
+<p>
+  The DeathClient plugin system exposes a global object <code>window.DeathClient</code>
+  (also accessible as just <code>DeathClient</code>) that lets JavaScript code interact
+  with the game client at runtime. Every game tick (~50 ms) the Java side polls a set of
+  queues your script writes to, and pushes fresh world state back into JavaScript.
+</p>
+
+<p>The bridge is fully <strong>queue-based</strong> — you never call Java directly.
+You call a <code>DeathClient</code> method, it enqueues a command, and the game processes
+it on the next tick. This means:</p>
+<ul>
+  <li>All API calls are non-blocking and safe to call from any callback.</li>
+  <li>Actions have a maximum latency of one game tick (~50 ms).</li>
+  <li>The <code>getPlayer()</code> / <code>getWorld()</code> snapshots are always
+      <em>last tick's</em> values, not real-time.</li>
+</ul>
+
+<div class="callout callout-info">
+  <p><strong>Console access:</strong> Open your browser's DevTools (F12) while the game
+  is running. Type <code>DeathClient.help()</code> to print a quick API reference right
+  in the console.</p>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="loading">Loading Plugins</h2>
+
+<h3>Method 1 — File Picker (recommended)</h3>
+<p>In the mod menu footer click <strong>[JS Plugins]</strong>, then click
+<strong>Load Plugin (File)</strong>. A native file dialog opens; select any
+<code>.js</code> file. Multiple files can be selected at once.</p>
+
+<h3>Method 2 — Paste</h3>
+<p>In the JS Plugins screen, click the <strong>+ New</strong> tab. Type a name in the
+<em>Plugin Name</em> field, paste your source into the large text area, then click
+<strong>Load Pasted Source</strong>.</p>
+
+<h3>Method 3 — Browser Console</h3>
+<pre>
+<span class="cmt">// Paste a one-liner mod straight from the console</span>
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>: <span class="str">'ConsoleMod'</span>,
+  <span class="key">category</span>: <span class="str">'PLAYER'</span>,
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="kw">if</span> (p &amp;&amp; p.health &lt; <span class="num">5</span>) <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'LOW HEALTH!'</span>);
+  }
+});
+</pre>
+
+<h3>Hot-Reloading</h3>
+<p>In the <strong>Source</strong> tab of any loaded plugin, click <strong>Edit Source</strong>
+to open a full-screen browser text editor. Press <kbd>Ctrl+S</kbd> or click
+<strong>Save &amp; Reload</strong> and the plugin is instantly unloaded and re-evaluated
+with your new source — no page refresh required.</p>
+
+
+<!-- ================================================================ -->
+<h2 id="metadata">Metadata Header</h2>
+
+<p>Place a comment block at the very top of your file. DeathClient reads
+<code>@name</code>, <code>@description</code>, and <code>@version</code>
+automatically and shows them in the plugin list.</p>
+
+<pre>
+<span class="cmt">// @name        My Awesome Plugin</span>
+<span class="cmt">// @description Does cool things in Minecraft</span>
+<span class="cmt">// @version     1.0</span>
+<span class="cmt">// @author      YourName</span>
+
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({ <span class="cmt">/* ... */</span> });
+</pre>
+
+<p>If <code>@name</code> is omitted, the plugin display name defaults to the filename
+(without extension). You can always rename it later in the plugin list.</p>
+
+
+<!-- ================================================================ -->
+<h2 id="hello-world">Hello World</h2>
+
+<p>A minimal plugin that shows a chat message when enabled and prints your coordinates
+to the local chat every 5 seconds:</p>
+
+<pre>
+<span class="cmt">// @name     Coords Logger</span>
+<span class="cmt">// @version  1.0</span>
+
+<span class="kw">var</span> tickCount = <span class="num">0</span>;
+
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>:        <span class="str">'Coords Logger'</span>,
+  <span class="key">description</span>: <span class="str">'Prints your coordinates every 5 seconds.'</span>,
+  <span class="key">category</span>:    <span class="str">'PLAYER'</span>,
+  <span class="key">isCheat</span>:     <span class="num">false</span>,
+
+  <span class="key">onEnable</span>: <span class="kw">function</span>() {
+    <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§aCoords Logger enabled!'</span>);
+    tickCount = <span class="num">0</span>;
+  },
+
+  <span class="key">onDisable</span>: <span class="kw">function</span>() {
+    <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§cCoords Logger disabled.'</span>);
+  },
+
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    tickCount++;
+    <span class="kw">if</span> (tickCount % <span class="num">100</span> !== <span class="num">0</span>) <span class="kw">return</span>; <span class="cmt">// ~5 seconds at 20 tps</span>
+
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="kw">if</span> (!p) <span class="kw">return</span>;
+
+    <span class="dc">DeathClient</span>.<span class="fn">chat</span>(
+      <span class="str">'§7Pos: §f'</span> + Math.floor(p.x) +
+      <span class="str">' / '</span>       + Math.floor(p.y) +
+      <span class="str">' / '</span>       + Math.floor(p.z)
+    );
+  }
+});
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="lifecycle">Mod Lifecycle</h2>
+
+<p>A registered mod goes through the following states:</p>
+
+<table>
+  <thead><tr><th>Callback</th><th>When it fires</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>onEnable</td><td>Mod is toggled ON</td><td>Reset timers, clear state here</td></tr>
+    <tr><td>onDisable</td><td>Mod is toggled OFF</td><td>Clean up side-effects</td></tr>
+    <tr><td>onUpdate</td><td>Every game tick (~20/s) while enabled</td><td>Main logic loop</td></tr>
+    <tr><td>onRender2D</td><td>Every rendered frame while enabled</td><td>Draw HUD overlays. Can fire faster than 20/s</td></tr>
+    <tr><td>onKey(keyCode)</td><td>Any key pressed while enabled</td><td>Use keybinds set in mod settings</td></tr>
+    <tr><td>onChat(message)</td><td>A chat message arrives while enabled</td><td>message is the raw string</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-warn">
+  <p><strong>onRender2D is not a drawing context.</strong> You cannot draw pixels directly
+  from JavaScript. Use it to read data and queue chat messages, or update variables that
+  affect in-game rendering done by Java mods. True 2D drawing from JS is not currently
+  supported.</p>
+</div>
+
+<h3>Tick rate</h3>
+<p><code>onUpdate</code> fires 20 times per second (once per Minecraft game tick). Use a
+counter to implement delays:</p>
+<pre>
+<span class="kw">var</span> timer = <span class="num">0</span>;
+
+<span class="key">onUpdate</span>: <span class="kw">function</span>() {
+  timer++;
+  <span class="kw">if</span> (timer &lt; <span class="num">40</span>) <span class="kw">return</span>; <span class="cmt">// wait 2 seconds (40 ticks)</span>
+  timer = <span class="num">0</span>;
+  <span class="cmt">// do thing every 2 seconds</span>
+}
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="settings">Settings</h2>
+
+<p>Settings appear in the mod's settings screen inside the game. Declare them
+in the <code>settings</code> array when calling <code>registerMod</code>.</p>
+
+<h3>Setting types</h3>
+<table>
+  <thead><tr><th>type</th><th>value</th><th>Extra fields</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>"boolean"</td><td>true / false</td><td>—</td><td>Toggle switch</td></tr>
+    <tr><td>"number"</td><td>number</td><td>min, max, step</td><td>Slider</td></tr>
+    <tr><td>"mode"</td><td>string</td><td>options: [...]</td><td>Cycle through list</td></tr>
+    <tr><td>"string"</td><td>string</td><td>—</td><td>Text field</td></tr>
+  </tbody>
+</table>
+
+<pre>
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>: <span class="str">'MyMod'</span>,
+  <span class="key">settings</span>: [
+    { <span class="key">name</span>: <span class="str">'Enabled Feature'</span>, <span class="key">type</span>: <span class="str">'boolean'</span>, <span class="key">value</span>: <span class="num">true</span>  },
+    { <span class="key">name</span>: <span class="str">'Speed'</span>,           <span class="key">type</span>: <span class="str">'number'</span>,  <span class="key">value</span>: <span class="num">1.5</span>,
+      <span class="key">min</span>: <span class="num">0.5</span>, <span class="key">max</span>: <span class="num">5.0</span>, <span class="key">step</span>: <span class="num">0.1</span> },
+    { <span class="key">name</span>: <span class="str">'Mode'</span>,            <span class="key">type</span>: <span class="str">'mode'</span>,    <span class="key">value</span>: <span class="str">'Fast'</span>,
+      <span class="key">options</span>: [<span class="str">'Slow'</span>, <span class="str">'Fast'</span>, <span class="str">'Turbo'</span>] },
+    { <span class="key">name</span>: <span class="str">'Message'</span>,        <span class="key">type</span>: <span class="str">'string'</span>,  <span class="key">value</span>: <span class="str">'Hello!'</span> },
+  ],
+
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="cmt">// Read settings at runtime:</span>
+    <span class="kw">var</span> speed = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'MyMod'</span>, <span class="str">'Speed'</span>);
+    <span class="kw">var</span> mode  = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'MyMod'</span>, <span class="str">'Mode'</span>);
+    <span class="kw">var</span> msg   = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'MyMod'</span>, <span class="str">'Message'</span>);
+
+    <span class="kw">if</span> (mode === <span class="str">'Turbo'</span>) {
+      <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§cTurbo mode! Speed = '</span> + speed);
+    }
+  }
+});
+</pre>
+
+<div class="callout callout-tip">
+  <p>Settings are stored in the JS object and persisted for the session. They are
+  <strong>not</strong> saved to disk between page reloads — consider storing important
+  values in <code>localStorage</code> from your plugin if needed.</p>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="events">Events</h2>
+
+<p>The event bus lets you react to things happening in the game from <em>outside</em>
+a registered mod, or share events across multiple mods in one plugin.</p>
+
+<pre>
+<span class="cmt">// Listen for any mod being enabled</span>
+<span class="dc">DeathClient</span>.<span class="fn">on</span>(<span class="str">'mod_enable'</span>, <span class="kw">function</span>(data) {
+  <span class="dc">DeathClient</span>.<span class="fn">log</span>(<span class="str">'Mod enabled: '</span> + data.name);
+});
+
+<span class="cmt">// Listen for incoming chat</span>
+<span class="kw">function</span> <span class="fn">onChat</span>(data) {
+  <span class="kw">if</span> (data.message.includes(<span class="str">'!coords'</span>)) {
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="dc">DeathClient</span>.<span class="fn">sendChat</span>(<span class="str">'My coords: '</span> + Math.floor(p.x) + <span class="str">' '</span> + Math.floor(p.z));
+  }
+}
+<span class="dc">DeathClient</span>.<span class="fn">on</span>(<span class="str">'chat_receive'</span>, onChat);
+
+<span class="cmt">// Remove the listener later</span>
+<span class="dc">DeathClient</span>.<span class="fn">off</span>(<span class="str">'chat_receive'</span>, onChat);
+</pre>
+
+<h3>Built-in event names</h3>
+<table>
+  <thead><tr><th>Event</th><th>Data payload</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>tick</td><td>Player snapshot (or null)</td><td>Fires every game tick</td></tr>
+    <tr><td>render2d</td><td>null</td><td>Fires every rendered frame</td></tr>
+    <tr><td>chat_receive</td><td>{ message: string }</td><td>Incoming chat message</td></tr>
+    <tr><td>mod_enable</td><td>{ name: string }</td><td>Any mod (Java or JS) enabled</td></tr>
+    <tr><td>mod_disable</td><td>{ name: string }</td><td>Any mod (Java or JS) disabled</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ================================================================ -->
+<h2 id="world-data">World Data</h2>
+
+<p>World data is pushed from Java to JavaScript every tick. Always check for
+<code>null</code> before using it — data is unavailable while not in a world.</p>
+
+<pre>
+<span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+<span class="kw">if</span> (!p) <span class="kw">return</span>; <span class="cmt">// not in world yet</span>
+
+<span class="dc">DeathClient</span>.<span class="fn">log</span>(<span class="str">'Health: '</span> + p.health + <span class="str">' / '</span> + p.maxHealth);
+<span class="dc">DeathClient</span>.<span class="fn">log</span>(<span class="str">'On ground: '</span> + p.onGround);
+
+<span class="kw">var</span> w = <span class="dc">DeathClient</span>.<span class="fn">getWorld</span>();
+<span class="kw">if</span> (w &amp;&amp; w.isRaining) <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§9It is raining!'</span>);
+
+<span class="kw">var</span> s = <span class="dc">DeathClient</span>.<span class="fn">getServer</span>();
+<span class="dc">DeathClient</span>.<span class="fn">log</span>(<span class="str">'Server: '</span> + (s ? s.ip : <span class="str">'singleplayer'</span>));
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="api-register">API Reference — Registration</h2>
+
+<div class="api-entry">
+  <div class="sig">
+    <span class="name">registerMod</span>
+    <span class="params">(config: Object)</span>
+    <span class="ret">→ config Object</span>
+  </div>
+  <div class="body">
+    <p>Registers a new mod and adds it to the mod list. The returned object is the
+    same config reference — you can store it to read <code>cfg._toggled</code> later.</p>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>name</td><td>string</td><td><span class="badge badge-red">Yes</span></td><td>Unique display name. Duplicate names are skipped.</td></tr>
+        <tr><td>description</td><td>string</td><td>No</td><td>Shown in the tooltip and settings screen.</td></tr>
+        <tr><td>category</td><td>string</td><td>No</td><td>See <a href="#ref-categories">Categories</a>. Default: <code>"PLAYER"</code>.</td></tr>
+        <tr><td>isCheat</td><td>boolean</td><td>No</td><td>If true, mod is hidden and disabled in Legit Mode.</td></tr>
+        <tr><td>settings</td><td>Array</td><td>No</td><td>Array of setting objects. See <a href="#settings">Settings</a>.</td></tr>
+        <tr><td>onEnable</td><td>function()</td><td>No</td><td>Called when the mod is toggled on.</td></tr>
+        <tr><td>onDisable</td><td>function()</td><td>No</td><td>Called when the mod is toggled off.</td></tr>
+        <tr><td>onUpdate</td><td>function()</td><td>No</td><td>Called every tick while enabled.</td></tr>
+        <tr><td>onRender2D</td><td>function()</td><td>No</td><td>Called every frame while enabled.</td></tr>
+        <tr><td>onKey</td><td>function(keyCode)</td><td>No</td><td>Called on key press while enabled.</td></tr>
+        <tr><td>onChat</td><td>function(message)</td><td>No</td><td>Called on incoming chat while enabled.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="api-entry">
+  <div class="sig">
+    <span class="name">unregisterMod</span>
+    <span class="params">(name: string)</span>
+    <span class="ret">→ void</span>
+  </div>
+  <div class="body">
+    <p>Removes a JS mod from the mod list at runtime. The mod is disabled first if it
+    was active. Useful for self-unregistering after a one-time action.</p>
+  </div>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="api-chat">API Reference — Chat &amp; Commands</h2>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">chat</span><span class="params">(message: string)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Displays a message in the local chat window only. The server never
+  sees it. Supports Minecraft colour codes (<code>§a</code>, <code>§c</code>, etc.).</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">sendChat</span><span class="params">(message: string)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Sends a chat message to the server, exactly as if the player typed it.
+  If the message starts with <code>/</code> it is treated as a command by the server.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">sendCommand</span><span class="params">(command: string)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Sends a slash command. The leading <code>/</code> is added
+  automatically if missing. Equivalent to <code>sendChat('/command')</code>.</p></div>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="api-mods">API Reference — Mod Control</h2>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">enableMod</span><span class="params">(name: string)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Enables a mod by name. Works on both Java and JS mods. Legit Mode restrictions still apply.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">disableMod</span><span class="params">(name: string)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Disables a mod by name.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">toggleMod</span><span class="params">(name: string)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Toggles a mod's state — on if off, off if on.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">isEnabled</span><span class="params">(name: string)</span><span class="ret">→ boolean</span></div>
+  <div class="body"><p>Returns whether a mod is currently active. For JS mods this is
+  synchronous (reads local state). For Java mods it reflects the last known state.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">getMods</span><span class="params">()</span><span class="ret">→ string[]</span></div>
+  <div class="body"><p>Returns an array of all registered mod names (both Java and JS).</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">getModInfo</span><span class="params">(name: string)</span><span class="ret">→ Object | null</span></div>
+  <div class="body">
+    <p>Returns a snapshot of a mod's metadata, or <code>null</code> if not found.</p>
+    <pre style="margin:8px 0 0">{ name, description, category, isCheat, enabled, settings: [...] }</pre>
+  </div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">setModSetting</span><span class="params">(modName: string, settingName: string, value: any)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Changes a setting on any mod (Java or JS). The change is queued
+  and applied on the next tick. <code>value</code> is coerced to a string internally,
+  so pass numbers/booleans directly.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">getModSetting</span><span class="params">(modName: string, settingName: string)</span><span class="ret">→ any | null</span></div>
+  <div class="body"><p>Reads the current value of a setting from a <em>JS mod only</em>.
+  Java mod settings are write-only from the JS side for now.</p></div>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="api-data">API Reference — World Data</h2>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">getPlayer</span><span class="params">()</span><span class="ret">→ PlayerState | null</span></div>
+  <div class="body"><p>Returns last tick's player snapshot. <code>null</code> when not in a world.
+  See <a href="#ref-player">Player Object reference</a>.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">getWorld</span><span class="params">()</span><span class="ret">→ WorldState | null</span></div>
+  <div class="body"><p>Returns last tick's world snapshot.
+  See <a href="#ref-world">World Object reference</a>.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">getServer</span><span class="params">()</span><span class="ret">→ ServerInfo | null</span></div>
+  <div class="body"><p>Returns current server connection info.
+  See <a href="#ref-server">Server Object reference</a>.</p></div>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="api-events">API Reference — Event Bus</h2>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">on</span><span class="params">(event: string, callback: Function)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Registers a listener for a named event. Multiple listeners per event
+  are supported. See <a href="#events">Events</a> for the full list.</p></div>
+</div>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">off</span><span class="params">(event: string, callback: Function)</span><span class="ret">→ void</span></div>
+  <div class="body"><p>Removes a previously registered listener. You must pass the <em>same
+  function reference</em> used in <code>on()</code> — anonymous functions cannot be
+  removed, so store them in a variable first.</p></div>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="api-log">API Reference — Logging</h2>
+
+<div class="api-entry">
+  <div class="sig"><span class="name">log</span><span class="params">(message: string)</span></div>
+  <div class="body"><p>Prints to the browser console with <code>[DC]</code> prefix.</p></div>
+</div>
+<div class="api-entry">
+  <div class="sig"><span class="name">warn</span><span class="params">(message: string)</span></div>
+  <div class="body"><p>Prints a yellow warning to the browser console.</p></div>
+</div>
+<div class="api-entry">
+  <div class="sig"><span class="name">error</span><span class="params">(message: string)</span></div>
+  <div class="body"><p>Prints a red error to the browser console.</p></div>
+</div>
+<div class="api-entry">
+  <div class="sig"><span class="name">help</span><span class="params">()</span></div>
+  <div class="body"><p>Prints a compact API reference to the browser console.</p></div>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="ex-hud">Example — Custom HUD Line</h2>
+
+<p>Because direct 2D drawing from JS isn't supported, the cleanest way to add
+a HUD element is to create a mod that sends data to an existing Java HUD mod
+via a setting, or — more practically — display information via the
+<code>chat()</code> function triggered at intervals. Here is a pattern that
+announces your speed in chat periodically:</p>
+
+<pre>
+<span class="cmt">// @name Speed Announcer</span>
+
+<span class="kw">var</span> ticks = <span class="num">0</span>;
+<span class="kw">var</span> lastX = <span class="num">0</span>, lastZ = <span class="num">0</span>;
+
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>:     <span class="str">'Speed Announcer'</span>,
+  <span class="key">category</span>: <span class="str">'HUD'</span>,
+
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="kw">if</span> (!p) <span class="kw">return</span>;
+
+    ticks++;
+    <span class="kw">var</span> dx = p.x - lastX, dz = p.z - lastZ;
+    <span class="kw">var</span> speed = Math.sqrt(dx*dx + dz*dz); <span class="cmt">// blocks/tick</span>
+    lastX = p.x; lastZ = p.z;
+
+    <span class="kw">if</span> (ticks % <span class="num">20</span> === <span class="num">0</span>) { <span class="cmt">// every second</span>
+      <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§7Speed: §e'</span> + (speed * <span class="num">20</span>).toFixed(<span class="num">2</span>) + <span class="str">'§7 b/s'</span>);
+    }
+  }
+});
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="ex-auto">Example — Auto-Action (Low Health Flee)</h2>
+
+<p>Automatically runs a command and sends a warning when health drops below a
+threshold:</p>
+
+<pre>
+<span class="cmt">// @name     Health Guard</span>
+<span class="cmt">// @version  1.0</span>
+
+<span class="kw">var</span> alerted = <span class="num">false</span>;
+
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>:    <span class="str">'Health Guard'</span>,
+  <span class="key">category</span>:<span class="str">'COMBAT'</span>,
+  <span class="key">isCheat</span>: <span class="num">false</span>,
+  <span class="key">settings</span>:[
+    { <span class="key">name</span>: <span class="str">'HP Threshold'</span>, <span class="key">type</span>: <span class="str">'number'</span>,
+      <span class="key">value</span>: <span class="num">6</span>, <span class="key">min</span>: <span class="num">1</span>, <span class="key">max</span>: <span class="num">20</span>, <span class="key">step</span>: <span class="num">1</span> },
+    { <span class="key">name</span>: <span class="str">'Flee Command'</span>, <span class="key">type</span>: <span class="str">'string'</span>, <span class="key">value</span>: <span class="str">'/hub'</span> },
+  ],
+
+  <span class="key">onEnable</span>:  <span class="kw">function</span>() { alerted = <span class="num">false</span>; },
+
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="kw">if</span> (!p) <span class="kw">return</span>;
+
+    <span class="kw">var</span> threshold = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'Health Guard'</span>, <span class="str">'HP Threshold'</span>);
+    <span class="kw">var</span> cmd       = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'Health Guard'</span>, <span class="str">'Flee Command'</span>);
+
+    <span class="kw">if</span> (p.health &lt;= threshold &amp;&amp; !alerted) {
+      alerted = <span class="num">true</span>;
+      <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§c⚠ Low health! Running: '</span> + cmd);
+      <span class="dc">DeathClient</span>.<span class="fn">sendCommand</span>(cmd);
+    }
+    <span class="kw">if</span> (p.health &gt; threshold) alerted = <span class="num">false</span>; <span class="cmt">// reset when healed</span>
+  }
+});
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="ex-react">Example — React to Chat</h2>
+
+<p>A command bot that responds to other players' messages:</p>
+
+<pre>
+<span class="cmt">// @name Chat Bot</span>
+
+<span class="kw">var</span> responses = {
+  <span class="str">'!coords'</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="kw">return</span> p ? Math.floor(p.x)+<span class="str">' / '</span>+Math.floor(p.y)+<span class="str">' / '</span>+Math.floor(p.z) : <span class="str">'?'</span>;
+  },
+  <span class="str">'!health'</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> p = <span class="dc">DeathClient</span>.<span class="fn">getPlayer</span>();
+    <span class="kw">return</span> p ? Math.floor(p.health) + <span class="str">' HP'</span> : <span class="str">'?'</span>;
+  }
+};
+
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>:    <span class="str">'Chat Bot'</span>,
+  <span class="key">category</span>:<span class="str">'PLAYER'</span>,
+
+  <span class="key">onChat</span>: <span class="kw">function</span>(message) {
+    <span class="kw">for</span> (<span class="kw">var</span> trigger <span class="kw">in</span> responses) {
+      <span class="kw">if</span> (message.indexOf(trigger) !== -<span class="num">1</span>) {
+        <span class="dc">DeathClient</span>.<span class="fn">sendChat</span>(responses[trigger]());
+        <span class="kw">return</span>;
+      }
+    }
+  }
+});
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="ex-settings">Example — Rich Settings</h2>
+
+<p>A mod that demonstrates all four setting types together:</p>
+
+<pre>
+<span class="cmt">// @name Demo Settings</span>
+
+<span class="kw">var</span> mod = <span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>: <span class="str">'Demo Settings'</span>,
+  <span class="key">settings</span>: [
+    { <span class="key">name</span>: <span class="str">'Active'</span>,   <span class="key">type</span>: <span class="str">'boolean'</span>, <span class="key">value</span>: <span class="num">true</span> },
+    { <span class="key">name</span>: <span class="str">'Strength'</span>, <span class="key">type</span>: <span class="str">'number'</span>,  <span class="key">value</span>: <span class="num">3.0</span>,
+      <span class="key">min</span>: <span class="num">1.0</span>, <span class="key">max</span>: <span class="num">10.0</span>, <span class="key">step</span>: <span class="num">0.5</span> },
+    { <span class="key">name</span>: <span class="str">'Style'</span>,    <span class="key">type</span>: <span class="str">'mode'</span>,    <span class="key">value</span>: <span class="str">'Normal'</span>,
+      <span class="key">options</span>: [<span class="str">'Normal'</span>, <span class="str">'Aggressive'</span>, <span class="str">'Passive'</span>] },
+    { <span class="key">name</span>: <span class="str">'Label'</span>,    <span class="key">type</span>: <span class="str">'string'</span>,  <span class="key">value</span>: <span class="str">'Hello'</span> },
+  ],
+
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> active   = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'Demo Settings'</span>, <span class="str">'Active'</span>);
+    <span class="kw">if</span> (!active) <span class="kw">return</span>;
+
+    <span class="kw">var</span> strength = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'Demo Settings'</span>, <span class="str">'Strength'</span>);
+    <span class="kw">var</span> style    = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'Demo Settings'</span>, <span class="str">'Style'</span>);
+    <span class="kw">var</span> label    = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'Demo Settings'</span>, <span class="str">'Label'</span>);
+
+    <span class="dc">DeathClient</span>.<span class="fn">log</span>(label + <span class="str">' | '</span> + style + <span class="str">' | x'</span> + strength);
+  }
+});
+
+<span class="cmt">// You can also change settings programmatically:</span>
+<span class="dc">DeathClient</span>.<span class="fn">setModSetting</span>(<span class="str">'Demo Settings'</span>, <span class="str">'Strength'</span>, <span class="num">7.5</span>);
+</pre>
+
+
+<!-- ================================================================ -->
+<h2 id="ex-multi">Example — Multi-Mod Plugin</h2>
+
+<p>One <code>.js</code> file can register as many mods as you like. They all appear
+in the mod list and are tracked under the same plugin entry:</p>
+
+<pre>
+<span class="cmt">// @name     Combat Suite</span>
+<span class="cmt">// @version  2.0</span>
+<span class="cmt">// @description A bundle of combat helpers.</span>
+
+<span class="cmt">/* ---- shared state ---- */</span>
+<span class="kw">var</span> playerCache = <span class="num">null</span>;
+<span class="dc">DeathClient</span>.<span class="fn">on</span>(<span class="str">'tick'</span>, <span class="kw">function</span>(p) { playerCache = p; });
+
+<span class="cmt">/* ---- Low HP Warning ---- */</span>
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>: <span class="str">'HP Warning'</span>, <span class="key">category</span>: <span class="str">'COMBAT'</span>, <span class="key">isCheat</span>: <span class="num">false</span>,
+  <span class="key">settings</span>: [{ <span class="key">name</span>: <span class="str">'Threshold'</span>, <span class="key">type</span>: <span class="str">'number'</span>, <span class="key">value</span>:<span class="num">6</span>, <span class="key">min</span>:<span class="num">1</span>, <span class="key">max</span>:<span class="num">20</span>, <span class="key">step</span>:<span class="num">1</span> }],
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="kw">if</span> (!playerCache) <span class="kw">return</span>;
+    <span class="kw">var</span> t = <span class="dc">DeathClient</span>.<span class="fn">getModSetting</span>(<span class="str">'HP Warning'</span>, <span class="str">'Threshold'</span>);
+    <span class="kw">if</span> (playerCache.health &lt;= t)
+      <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§c❤ LOW HEALTH: '</span> + Math.floor(playerCache.health));
+  }
+});
+
+<span class="cmt">/* ---- Sprint Reminder ---- */</span>
+<span class="dc">DeathClient</span>.<span class="fn">registerMod</span>({
+  <span class="key">name</span>: <span class="str">'Sprint Nag'</span>, <span class="key">category</span>: <span class="str">'MOVEMENT'</span>, <span class="key">isCheat</span>: <span class="num">false</span>,
+  <span class="key">onUpdate</span>: <span class="kw">function</span>() {
+    <span class="kw">if</span> (playerCache &amp;&amp; !playerCache.sprinting &amp;&amp; playerCache.onGround)
+      <span class="dc">DeathClient</span>.<span class="fn">chat</span>(<span class="str">'§eReminder: press sprint!'</span>);
+  }
+});
+</pre>
+
+<div class="callout callout-warn">
+  <p><strong>Don't spam chat from onUpdate.</strong> The example above would print every
+  tick. Add a tick counter or cooldown, as shown in earlier examples.</p>
+</div>
+
+
+<!-- ================================================================ -->
+<h2 id="ref-categories">Reference — Categories</h2>
+
+<table>
+  <thead><tr><th>String</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>"MOVEMENT"</td><td>Fly, Speed, Bhop, Step, etc.</td></tr>
+    <tr><td>"PLAYER"</td><td>NoFall, AutoArmor, AntiAFK, etc.</td></tr>
+    <tr><td>"COMBAT"</td><td>KillAura, Aimbot, AutoClicker, etc.</td></tr>
+    <tr><td>"RENDER"</td><td>Fullbright, ESP, XRay, WAILA, etc.</td></tr>
+    <tr><td>"WORLD"</td><td>Scaffold, Nuker, ChestStealer, etc.</td></tr>
+    <tr><td>"HUD"</td><td>HUD, ArmorHUD, Compass, etc.</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ================================================================ -->
+<h2 id="ref-player">Reference — Player Object</h2>
+
+<p>Returned by <code>DeathClient.getPlayer()</code>. Updated every game tick.</p>
+
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>x, y, z</td><td>number</td><td>World position (double precision)</td></tr>
+    <tr><td>yaw</td><td>number</td><td>Horizontal look angle (degrees, -180 to 180)</td></tr>
+    <tr><td>pitch</td><td>number</td><td>Vertical look angle (degrees, -90 to 90)</td></tr>
+    <tr><td>health</td><td>number</td><td>Current health (0–maxHealth)</td></tr>
+    <tr><td>maxHealth</td><td>number</td><td>Maximum health (typically 20)</td></tr>
+    <tr><td>food</td><td>number</td><td>Food level (0–20)</td></tr>
+    <tr><td>saturation</td><td>number</td><td>Saturation level (0.0–5.0)</td></tr>
+    <tr><td>onGround</td><td>boolean</td><td>True if standing on solid ground</td></tr>
+    <tr><td>sprinting</td><td>boolean</td><td>True if currently sprinting</td></tr>
+    <tr><td>sneaking</td><td>boolean</td><td>True if currently sneaking</td></tr>
+    <tr><td>motionX</td><td>number</td><td>Horizontal velocity X (blocks/tick)</td></tr>
+    <tr><td>motionY</td><td>number</td><td>Vertical velocity (blocks/tick)</td></tr>
+    <tr><td>motionZ</td><td>number</td><td>Horizontal velocity Z (blocks/tick)</td></tr>
+    <tr><td>eyeHeight</td><td>number</td><td>Eye height offset from posY (typically 1.62)</td></tr>
+    <tr><td>dimension</td><td>number</td><td>0 = Overworld, -1 = Nether, 1 = End</td></tr>
+    <tr><td>gamemode</td><td>number</td><td>0 = Survival, 1 = Creative, 2 = Adventure, 3 = Spectator</td></tr>
+    <tr><td>xp</td><td>number</td><td>XP progress in current level (0.0–1.0)</td></tr>
+    <tr><td>level</td><td>number</td><td>Current XP level</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ================================================================ -->
+<h2 id="ref-world">Reference — World Object</h2>
+
+<p>Returned by <code>DeathClient.getWorld()</code>. Updated every game tick.</p>
+
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>time</td><td>number</td><td>Total world time in ticks (ever-increasing)</td></tr>
+    <tr><td>timeOfDay</td><td>number</td><td>Time of day (0–24000). 0 = dawn, 6000 = noon, 12000 = dusk, 18000 = midnight</td></tr>
+    <tr><td>isRaining</td><td>boolean</td><td>True if it is currently raining</td></tr>
+    <tr><td>thundering</td><td>boolean</td><td>True if there is a thunderstorm</td></tr>
+    <tr><td>difficulty</td><td>number</td><td>0 = Peaceful, 1 = Easy, 2 = Normal, 3 = Hard</td></tr>
+    <tr><td>dimension</td><td>number</td><td>Same as player dimension field</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ================================================================ -->
+<h2 id="ref-server">Reference — Server Object</h2>
+
+<p>Returned by <code>DeathClient.getServer()</code>. Updated every game tick.</p>
+
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>ip</td><td>string</td><td>Server IP address, or <code>"singleplayer"</code></td></tr>
+    <tr><td>port</td><td>number</td><td>Server port (0 if singleplayer or not available)</td></tr>
+    <tr><td>ping</td><td>number</td><td>Round-trip latency in milliseconds (0 in singleplayer)</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ================================================================ -->
+<h2 id="ref-limits">Limits &amp; Gotchas</h2>
+
+<h3>What you CAN do from JS</h3>
+<ul>
+  <li>Read player position, health, motion, food, dimension, gamemode, XP every tick</li>
+  <li>Read world time, weather, difficulty</li>
+  <li>Read server IP and ping</li>
+  <li>Send chat messages and slash commands to the server</li>
+  <li>Display local-only chat notifications</li>
+  <li>Enable, disable, or toggle any mod by name</li>
+  <li>Change settings on any mod (Java or JS)</li>
+  <li>React to incoming chat messages via <code>onChat</code></li>
+  <li>Register and unregister mods at runtime</li>
+  <li>Use the full browser JavaScript environment: <code>fetch</code>,
+      <code>localStorage</code>, <code>setTimeout</code>, DOM APIs, etc.</li>
+</ul>
+
+<h3>What you CANNOT do from JS</h3>
+<ul>
+  <li>Draw pixels directly on screen (no canvas/2D drawing context from JS)</li>
+  <li>Access the world's block data (no <code>getBlock(x,y,z)</code>)</li>
+  <li>Access entity lists or read other players' data</li>
+  <li>Call Java methods directly (the queue bridge is the only channel)</li>
+  <li>Catch <code>onRender3D</code> events in JS</li>
+</ul>
+
+<h3>Performance</h3>
+<ul>
+  <li><code>onUpdate</code> fires 20 times per second. Keep logic lightweight — avoid
+      nested loops or expensive string operations on every tick.</li>
+  <li><code>onRender2D</code> can fire at 60+ times per second. Never run heavy logic
+      there; use it only to read pre-computed values.</li>
+  <li>Unregister listeners with <code>dc.off()</code> when no longer needed,
+      especially inside mods that disable frequently.</li>
+  <li>Large <code>setTimeout</code> or <code>setInterval</code> timers work fine but
+      remember the page context is the EaglerCraft tab — they stop when the tab
+      is hidden in most browsers.</li>
+</ul>
+
+<h3>Minecraft colour codes</h3>
+<p>Use <code>§</code> (section sign, U+00A7) followed by a colour/format code in
+any string passed to <code>chat()</code>:</p>
+<table>
+  <thead><tr><th>Code</th><th>Colour/Format</th><th>Code</th><th>Colour/Format</th></tr></thead>
+  <tbody>
+    <tr><td>§0</td><td>Black</td><td>§8</td><td>Dark Grey</td></tr>
+    <tr><td>§1</td><td>Dark Blue</td><td>§9</td><td>Blue</td></tr>
+    <tr><td>§2</td><td>Dark Green</td><td>§a</td><td>Green</td></tr>
+    <tr><td>§3</td><td>Dark Aqua</td><td>§b</td><td>Aqua</td></tr>
+    <tr><td>§4</td><td>Dark Red</td><td>§c</td><td>Red</td></tr>
+    <tr><td>§5</td><td>Dark Purple</td><td>§d</td><td>Light Purple</td></tr>
+    <tr><td>§6</td><td>Gold</td><td>§e</td><td>Yellow</td></tr>
+    <tr><td>§7</td><td>Grey</td><td>§f</td><td>White</td></tr>
+    <tr><td>§l</td><td><strong>Bold</strong></td><td>§r</td><td>Reset</td></tr>
+    <tr><td>§o</td><td><em>Italic</em></td><td>§n</td><td>Underline</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-tip">
+  <p><strong>Tip:</strong> In JavaScript string literals you can write the section sign as
+  <code>'\u00a7'</code> if your text editor has trouble with the literal character:
+  <code>'\u00a7aGreen text'</code></p>
+</div>
+
+<br><br>
+<p style="color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 16px;">
+  DeathClient v1.2.0 · Plugin API documentation · EaglerCraft 1.8
+</p>
+
+</main>
+</div>
+
+<script>
+// Highlight active nav link on scroll
+var headings = document.querySelectorAll('h2[id], h3[id]');
+var links = document.querySelectorAll('nav a');
+
+function getActive() {
+  var scroll = window.scrollY + 60;
+  var active = null;
+  headings.forEach(function(h) {
+    if (h.offsetTop <= scroll) active = h.id;
+  });
+  return active;
+}
+
+window.addEventListener('scroll', function() {
+  var id = getActive();
+  links.forEach(function(a) {
+    var href = a.getAttribute('href');
+    a.classList.toggle('active', href === '#' + id);
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
