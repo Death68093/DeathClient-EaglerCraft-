@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeathClient</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+  --red:     #cc0000;
+  --red2:    #ff2222;
+  --red3:    #ff6666;
+  --dim:     #660000;
+  --bg:      #080808;
+  --bg2:     #0e0e0e;
+  --border:  #1a1a1a;
+  --text:    #e0e0e0;
+  --muted:   #555;
+  --green:   #00cc66;
+  --mono:    'Share Tech Mono', monospace;
+  --display: 'Orbitron', sans-serif;
+  --body:    'Rajdhani', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── canvas background ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: .55;
+}
+
+/* ── scan-line overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.08) 2px,
+    rgba(0,0,0,.08) 4px
+  );
+}
+
+/* ── vignette ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    transparent 40%,
+    rgba(0,0,0,.85) 100%
+  );
+}
+
+/* ── shell ── */
+#shell {
+  position: relative;
+  z-index: 2;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+/* ── header ── */
+header {
+  text-align: center;
+  margin-bottom: 56px;
+  animation: fadeDown .8s cubic-bezier(.16,1,.3,1) both;
+}
+
+.logo-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+.logo-skull {
+  font-size: 36px;
+  line-height: 1;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 18px var(--red));
+  animation: pulse 3s ease-in-out infinite;
+}
+
+h1 {
+  font-family: var(--display);
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #fff 0%, var(--red3) 50%, var(--red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  position: relative;
+}
+
+/* glitch effect on hover */
+h1::before, h1::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+}
+h1:hover::before {
+  animation: glitch1 .3s steps(2) both;
+  clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+  transform: translate(-3px, 0);
+}
+h1:hover::after {
+  animation: glitch2 .3s steps(2) both;
+  clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  transform: translate(3px, 0);
+  filter: hue-rotate(90deg);
+}
+
+.tagline {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.tagline span {
+  color: var(--red);
+  animation: blink 1.2s step-end infinite;
+}
+
+.version-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--red);
+  border: 1px solid var(--dim);
+  padding: 2px 10px;
+  border-radius: 2px;
+  margin-top: 14px;
+  letter-spacing: .1em;
+  background: rgba(204,0,0,.07);
+}
+
+/* ── card grid ── */
+.cards {
+  display: flex;
+  gap: 24px;
+  animation: fadeUp .9s .15s cubic-bezier(.16,1,.3,1) both;
+}
+
+.card {
+  position: relative;
+  width: 280px;
+  background: rgba(10,10,10,.92);
+  border: 1px solid #1e1e1e;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .25s cubic-bezier(.16,1,.3,1),
+              border-color .25s;
+  text-decoration: none;
+  display: block;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  opacity: 0;
+  transition: opacity .25s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: #330000;
+}
+.card:hover::before { opacity: 1; }
+
+.card-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(204,0,0,.12) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+.card:hover .card-glow { opacity: 1; }
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  font-size: 64px;
+  position: relative;
+  border-bottom: 1px solid #1a1a1a;
+  background: #0b0b0b;
+  overflow: hidden;
+}
+
+.card-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(10,10,10,.9) 100%);
+}
+
+.card-icon .icon-gfx {
+  position: relative;
+  z-index: 1;
+  transition: transform .3s cubic-bezier(.16,1,.3,1), filter .3s;
+  filter: drop-shadow(0 0 16px rgba(204,0,0,.4));
+}
+.card:hover .icon-gfx {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 28px var(--red));
+}
+
+/* hex grid decoration inside card icons */
+.card-icon .hex-bg {
+  position: absolute;
+  inset: 0;
+  opacity: .04;
+  background-image:
+    repeating-linear-gradient(60deg,  #cc0000 0, #cc0000 1px, transparent 0, transparent 50%),
+    repeating-linear-gradient(120deg, #cc0000 0, #cc0000 1px, transparent 0, transparent 50%),
+    repeating-linear-gradient(180deg, #cc0000 0, #cc0000 1px, transparent 0, transparent 50%);
+  background-size: 20px 20px;
+}
+
+.card-body {
+  padding: 22px 22px 24px;
+}
+
+.card-title {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.card-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 12px;
+}
+
+.card-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  font-weight: 300;
+}
+
+.card-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #1a1a1a;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #333;
+  transition: color .2s;
+}
+.card:hover .card-cta { color: var(--red3); }
+
+.card-cta .arrow {
+  display: inline-block;
+  transform: translateX(0);
+  transition: transform .2s;
+}
+.card:hover .card-cta .arrow { transform: translateX(5px); }
+
+/* card accent colours */
+.card--launch .card-icon { background: #090909; }
+.card--launch .card-sub  { color: var(--red); }
+
+.card--docs .card-icon   { background: #090909; }
+.card--docs .card-sub    { color: #3399ff; }
+.card--docs::before { background: linear-gradient(90deg, transparent, #3399ff, transparent); }
+.card--docs:hover { border-color: #001e3a; }
+.card--docs .card-cta { color: #333; }
+.card--docs:hover .card-cta { color: #66aaff; }
+.card--docs .icon-gfx { filter: drop-shadow(0 0 16px rgba(51,153,255,.4)); }
+.card--docs:hover .icon-gfx { filter: drop-shadow(0 0 28px #3399ff); }
+.card--docs .card-glow { background: radial-gradient(ellipse at 50% 0%, rgba(51,153,255,.1) 0%, transparent 70%); }
+
+/* ── status bar ── */
+.status-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 28px;
+  background: rgba(8,8,8,.96);
+  border-top: 1px solid #181818;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 24px;
+  z-index: 10;
+  animation: fadeUp .6s .4s both;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+.status-item .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+.status-item .dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.status-item .dot.dim { background: #333; box-shadow: none; animation: none; }
+
+.status-right {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #2a2a2a;
+  letter-spacing: .1em;
+}
+
+/* ── corner decoration ── */
+.corner {
+  position: fixed;
+  width: 60px; height: 60px;
+  z-index: 3;
+  pointer-events: none;
+}
+.corner--tl { top: 0; left: 0; border-top: 1px solid #cc000033; border-left: 1px solid #cc000033; }
+.corner--tr { top: 0; right: 0; border-top: 1px solid #cc000033; border-right: 1px solid #cc000033; }
+.corner--bl { bottom: 28px; left: 0; border-bottom: 1px solid #cc000033; border-left: 1px solid #cc000033; }
+.corner--br { bottom: 28px; right: 0; border-bottom: 1px solid #cc000033; border-right: 1px solid #cc000033; }
+
+/* ── animations ── */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .5; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+@keyframes glitch1 {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes glitch2 {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── responsive ── */
+@media (max-width: 640px) {
+  .cards { flex-direction: column; }
+  .card  { width: 88vw; max-width: 320px; }
+  h1     { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- corners -->
+<div class="corner corner--tl"></div>
+<div class="corner corner--tr"></div>
+<div class="corner corner--bl"></div>
+<div class="corner corner--br"></div>
+
+<div id="shell">
+
+  <!-- header -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-skull">💀</div>
+      <h1 data-text="DeathClient">DeathClient</h1>
+      <div class="tagline">EaglerCraft 1.8 &nbsp;·&nbsp; by Death68093 &nbsp;<span>_</span></div>
+      <div class="version-badge">v1.2.0</div>
+    </div>
+  </header>
+
+  <!-- cards -->
+  <div class="cards">
+
+    <!-- Launch -->
+    <a class="card card--launch" href="client.html">
+      <div class="card-glow"></div>
+      <div class="card-icon">
+        <div class="hex-bg"></div>
+        <span class="icon-gfx">⚔️</span>
+      </div>
+      <div class="card-body">
+        <div class="card-sub">Play</div>
+        <div class="card-title">Launch Client</div>
+        <div class="card-desc">
+          Jump straight into EaglerCraft with DeathClient loaded.
+          Access the mod menu with the configured keybind.
+        </div>
+        <div class="card-cta">
+          Open client.html <span class="arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Docs -->
+    <a class="card card--docs" href="deathclient-plugin-docs.html">
+      <div class="card-glow"></div>
+      <div class="card-icon">
+        <div class="hex-bg"></div>
+        <span class="icon-gfx">📄</span>
+      </div>
+      <div class="card-body">
+        <div class="card-sub" style="color:#3399ff">Develop</div>
+        <div class="card-title">Plugin Docs</div>
+        <div class="card-desc">
+          Full JS plugin API reference — lifecycle, settings, events,
+          world data, and worked examples.
+        </div>
+        <div class="card-cta" style="border-color:#0d1e33">
+          Open plugin-docs.html <span class="arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+<!-- status bar -->
+<div class="status-bar">
+  <div class="status-item">
+    <div class="dot"></div>
+    <span>API READY</span>
+  </div>
+  <div class="status-item">
+    <div class="dot red"></div>
+    <span>LEGIT MODE OFF</span>
+  </div>
+  <div class="status-item">
+    <div class="dot dim"></div>
+    <span id="status-mods">0 MODS ACTIVE</span>
+  </div>
+  <div class="status-right" id="clock"></div>
+</div>
+
+<script>
+/* ── animated particle / grid background ── */
+(function() {
+  var canvas = document.getElementById('bg-canvas');
+  var ctx    = canvas.getContext('2d');
+  var W, H, particles = [], lines = [];
+  var mouse = { x: -9999, y: -9999 };
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  window.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  /* particles */
+  var COUNT = 55;
+  for (var i = 0; i < COUNT; i++) {
+    particles.push({
+      x:   Math.random() * 1920,
+      y:   Math.random() * 1080,
+      vx:  (Math.random() - .5) * .35,
+      vy:  (Math.random() - .5) * .35,
+      r:   Math.random() * 1.5 + .5,
+      alpha: Math.random() * .5 + .15
+    });
+  }
+
+  /* grid lines (static) */
+  var GRID = 80;
+  for (var gx = 0; gx < 2000; gx += GRID) {
+    lines.push({ x1: gx, y1: 0, x2: gx, y2: 2000, horiz: false });
+  }
+  for (var gy = 0; gy < 2000; gy += GRID) {
+    lines.push({ x1: 0, y1: gy, x2: 2000, y2: gy, horiz: true });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    /* draw grid */
+    ctx.strokeStyle = 'rgba(100,0,0,0.07)';
+    ctx.lineWidth   = 1;
+    lines.forEach(function(l) {
+      ctx.beginPath();
+      ctx.moveTo(l.x1, l.y1);
+      ctx.lineTo(l.x2, l.y2);
+      ctx.stroke();
+    });
+
+    /* draw connection lines between close particles */
+    for (var a = 0; a < particles.length; a++) {
+      for (var b = a + 1; b < particles.length; b++) {
+        var pa = particles[a], pb = particles[b];
+        var dx = pa.x - pb.x, dy = pa.y - pb.y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 130) {
+          var alpha = (1 - dist / 130) * .18;
+          ctx.strokeStyle = 'rgba(204,0,0,' + alpha + ')';
+          ctx.lineWidth = .8;
+          ctx.beginPath();
+          ctx.moveTo(pa.x, pa.y);
+          ctx.lineTo(pb.x, pb.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    /* mouse repulsion + draw particles */
+    particles.forEach(function(p) {
+      var dx = p.x - mouse.x, dy = p.y - mouse.y;
+      var d  = Math.sqrt(dx*dx + dy*dy);
+      if (d < 120) {
+        var force = (120 - d) / 120 * .6;
+        p.vx += (dx / d) * force;
+        p.vy += (dy / d) * force;
+      }
+
+      p.vx *= .98; p.vy *= .98; /* friction */
+      p.x += p.vx; p.y += p.vy;
+
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+      var glow = d < 160 ? (1 - d / 160) * .6 : 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r + glow, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(204,0,0,' + (p.alpha + glow * .3) + ')';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── clock ── */
+function updateClock() {
+  var now = new Date();
+  var h = String(now.getHours()).padStart(2,'0');
+  var m = String(now.getMinutes()).padStart(2,'0');
+  var s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = h + ':' + m + ':' + s;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ── keyboard shortcuts ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === '1' || e.key === 'Enter') {
+    window.location.href = 'client.html';
+  }
+  if (e.key === '2') {
+    window.location.href = 'deathclient-plugin-docs.html';
+  }
+});
+</script>
+</body>
+</html>
