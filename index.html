@@ -377,6 +377,63 @@ h1:hover::after {
 .corner--bl { bottom: 28px; left: 0; border-bottom: 1px solid #cc000033; border-left: 1px solid #cc000033; }
 .corner--br { bottom: 28px; right: 0; border-bottom: 1px solid #cc000033; border-right: 1px solid #cc000033; }
 
+/* ── modal overlay (NEW) ── */
+#modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 1; transition: opacity 0.3s;
+}
+#modal-overlay.hidden {
+  opacity: 0; pointer-events: none;
+}
+.modal-box {
+  background: rgba(10,10,10,.95);
+  border: 1px solid var(--red);
+  border-radius: 4px;
+  width: 320px;
+  box-shadow: 0 0 25px rgba(204,0,0,.15);
+  transform: translateY(0); transition: transform 0.3s cubic-bezier(.16,1,.3,1);
+  position: relative; overflow: hidden;
+}
+#modal-overlay.hidden .modal-box { transform: translateY(20px); }
+.modal-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+}
+.modal-header {
+  padding: 16px 20px; border-bottom: 1px solid #1a1a1a;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h2 {
+  font-family: var(--display); font-size: 16px; color: #fff;
+  text-transform: uppercase; letter-spacing: .1em; margin: 0;
+}
+.modal-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 28px; line-height: 1; cursor: pointer; transition: color 0.2s;
+}
+.modal-close:hover { color: var(--red); }
+.modal-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.modal-btn {
+  background: #0d0d0d; border: 1px solid #1a1a1a; color: var(--text);
+  padding: 14px 16px; font-family: var(--mono); font-size: 13px;
+  text-transform: uppercase; letter-spacing: .12em; cursor: pointer;
+  transition: all 0.2s; display: flex; justify-content: space-between; align-items: center;
+}
+.modal-btn:hover {
+  border-color: var(--red); background: rgba(204,0,0,.08); color: #fff;
+  transform: translateX(4px);
+}
+.modal-btn.back-btn {
+  border-color: #222; margin-top: 10px; justify-content: center; color: var(--muted);
+}
+.modal-btn.back-btn:hover {
+  border-color: #444; background: #151515; transform: translateX(0); color: #fff;
+}
+
 /* ── animations ── */
 @keyframes fadeDown {
   from { opacity: 0; transform: translateY(-24px); }
@@ -419,7 +476,6 @@ h1:hover::after {
 
 <canvas id="bg-canvas"></canvas>
 
-<!-- corners -->
 <div class="corner corner--tl"></div>
 <div class="corner corner--tr"></div>
 <div class="corner corner--bl"></div>
@@ -427,7 +483,6 @@ h1:hover::after {
 
 <div id="shell">
 
-  <!-- header -->
   <header>
     <div class="logo-wrap">
       <div class="logo-skull">💀</div>
@@ -437,11 +492,9 @@ h1:hover::after {
     </div>
   </header>
 
-  <!-- cards -->
   <div class="cards">
 
-    <!-- Launch -->
-    <a class="card card--launch" href="client.html">
+    <a class="card card--launch" href="#" onclick="openVersionModal(event)">
       <div class="card-glow"></div>
       <div class="card-icon">
         <div class="hex-bg"></div>
@@ -455,12 +508,11 @@ h1:hover::after {
           Access the mod menu with the configured keybind.
         </div>
         <div class="card-cta">
-          Open client.html <span class="arrow">→</span>
+          Select Version <span class="arrow">→</span>
         </div>
       </div>
     </a>
 
-    <!-- Docs -->
     <a class="card card--docs" href="plugin-docs.html">
       <div class="card-glow"></div>
       <div class="card-icon">
@@ -484,7 +536,6 @@ h1:hover::after {
 
 </div>
 
-<!-- status bar -->
 <div class="status-bar">
   <div class="status-item">
     <div class="dot"></div>
@@ -501,7 +552,123 @@ h1:hover::after {
   <div class="status-right" id="clock"></div>
 </div>
 
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 id="modal-title">Select Version</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-content" class="modal-body">
+      </div>
+  </div>
+</div>
+
 <script>
+/* ── Version & Engine Configuration ── */
+// EDIT THIS ARRAY to add or remove versions!
+const clientVersions = [
+  { 
+    name: "1.8.8", 
+    hasJS: true, 
+    hasWASM: true, 
+    urlJS: "client-1.8.8-js.html", 
+    urlWASM: "client-1.8.8-wasm.html" 
+  },
+  { 
+    name: "1.5.2", 
+    hasJS: true, 
+    hasWASM: false, 
+    urlJS: "client-1.5.2.html" 
+  },
+  { 
+    name: "Beta 1.3", 
+    hasJS: false, 
+    hasWASM: true, 
+    urlWASM: "client-b1.3.html" 
+  }
+];
+
+/* ── Modal Logic ── */
+const modalOverlay = document.getElementById('modal-overlay');
+const modalTitle = document.getElementById('modal-title');
+const modalContent = document.getElementById('modal-content');
+
+function openVersionModal(e) {
+  if (e) e.preventDefault();
+  renderVersions();
+  modalOverlay.classList.remove('hidden');
+}
+
+function closeModal() {
+  modalOverlay.classList.add('hidden');
+}
+
+// Close modal if clicking outside the box
+modalOverlay.addEventListener('click', function(e) {
+  if (e.target === modalOverlay) closeModal();
+});
+
+function renderVersions() {
+  modalTitle.innerText = "Select Version";
+  modalContent.innerHTML = '';
+  
+  clientVersions.forEach((v, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'modal-btn';
+    
+    // Generate small green/blue badges if supported
+    let badges = '';
+    if (v.hasJS) badges += `<span style="color:var(--green); margin-left:6px;">JS</span>`;
+    if (v.hasWASM) badges += `<span style="color:#3399ff; margin-left:6px;">WASM</span>`;
+    
+    btn.innerHTML = `<span>${v.name}</span> <span style="font-size:10px;">${badges}</span>`;
+    btn.onclick = () => handleVersionSelect(index);
+    modalContent.appendChild(btn);
+  });
+}
+
+function handleVersionSelect(index) {
+  const v = clientVersions[index];
+  
+  // If it supports both, ask which one. Otherwise, just launch the supported one.
+  if (v.hasJS && v.hasWASM) {
+    renderEngines(index);
+  } else if (v.hasJS) {
+    window.location.href = v.urlJS;
+  } else if (v.hasWASM) {
+    window.location.href = v.urlWASM;
+  }
+}
+
+function renderEngines(index) {
+  const v = clientVersions[index];
+  modalTitle.innerText = `Launch ${v.name}`;
+  modalContent.innerHTML = '';
+  
+  if (v.hasJS) {
+    const btnJS = document.createElement('button');
+    btnJS.className = 'modal-btn';
+    btnJS.innerHTML = `<span>JS Engine</span> <span style="color:var(--green); font-size:10px;">JAVASCRIPT</span>`;
+    btnJS.onclick = () => window.location.href = v.urlJS;
+    modalContent.appendChild(btnJS);
+  }
+  
+  if (v.hasWASM) {
+    const btnWASM = document.createElement('button');
+    btnWASM.className = 'modal-btn';
+    btnWASM.innerHTML = `<span>WASM Engine</span> <span style="color:#3399ff; font-size:10px;">WEBASSEMBLY</span>`;
+    btnWASM.onclick = () => window.location.href = v.urlWASM;
+    modalContent.appendChild(btnWASM);
+  }
+
+  const backBtn = document.createElement('button');
+  backBtn.className = 'modal-btn back-btn';
+  backBtn.innerHTML = "← Back to Versions";
+  backBtn.onclick = () => renderVersions();
+  modalContent.appendChild(backBtn);
+}
+
+
 /* ── animated particle / grid background ── */
 (function() {
   var canvas = document.getElementById('bg-canvas');
@@ -615,8 +782,14 @@ updateClock();
 
 /* ── keyboard shortcuts ── */
 document.addEventListener('keydown', function(e) {
+  // Prevent hotkeys from firing if modal is open
+  if (!modalOverlay.classList.contains('hidden')) {
+    if (e.key === 'Escape') closeModal();
+    return;
+  }
+  
   if (e.key === '1' || e.key === 'Enter') {
-    window.location.href = 'client.html';
+    openVersionModal();
   }
   if (e.key === '2') {
     window.location.href = 'plugin-docs.html';
