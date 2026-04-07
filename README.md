@@ -4,6 +4,9 @@
 
 It includes **legit-friendly tools** and **advanced hacked modules**, allowing you to choose how you play.
 
+
+### Be sure to star the repo to support me!
+
 ---
 
 # 🎮 Play DeathClient
