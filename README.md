@@ -39,3 +39,8 @@ DeathClient is intended for **educational and experimental purposes**. Use respo
 
 GitHub  
 https://github.com/Death68093
+
+
+---
+# Got an Issue or just a comment?
+Send it to me in the issues!
