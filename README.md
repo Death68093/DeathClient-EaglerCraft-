@@ -1,6 +1,6 @@
 # 💀 DeathClient – EaglerCraft Hack Client
 
-## Newest Version: V1.2.3
+## Newest Version: V1.2.4
 
 **DeathClient** is a powerful **EaglerCraft 1.8.8 hack client** built for players who want **more control, more tools, and more possibilities** while playing in the browser.
 
