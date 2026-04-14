@@ -116,6 +116,7 @@
     <a href="#settings">Settings API</a>
     <a href="#mod-callbacks">Mod Callbacks</a>
     <a href="#bridge-api">Bridge API (dc.*)</a>
+    <a href="#game-state">Game State</a>
     <a href="#events">Event System</a>
     <a href="#data-persistence">Data Persistence</a>
     <a href="#color-codes">Color Codes</a>
@@ -125,15 +126,15 @@
     <h2 id="getting-started">Getting Started</h2>
     <p>DeathClient supports JavaScript plugins executed directly via the built-in browser engine. Plugins interact with the Java client using the global <code>dc</code> object.</p>
     
-    <div class="callout-warning">
-      <p><strong>Note:</strong> 3D rendering (<code>onRender3D</code>) is currently <strong>not</strong> officially supported for pure JS mods. You can hook into 2D rendering and tick updates.</p>
+    <div class="callout-tip">
+      <p><strong>IDE Editor:</strong> You can edit your scripts directly in-game! Open the JS Plugins menu, select your file, and click <strong>Edit Code</strong> to open the built-in IDE overlay with syntax highlighting. Press <code>Ctrl+S</code> to save and hot-reload your code instantly.</p>
     </div>
 
     <pre><code>// Example Plugin: AutoGG
 var myMod = dc.registerMod({
     name: "AutoGG",
     description: "Says GG after a match.",
-    category: "PLAYER",
+    category: "CHAT",
     isCheat: false,
     settings: []
 });
@@ -151,8 +152,8 @@ myMod.onUpdate = function() {
       <tbody>
         <tr><td><code>name</code></td><td>String</td><td><strong>Required.</strong> The exact name of the module.</td></tr>
         <tr><td><code>description</code></td><td>String</td><td>A short description shown in the click GUI.</td></tr>
-        <tr><td><code>category</code></td><td>String</td><td><code>MOVEMENT</code>, <code>COMBAT</code>, <code>RENDER</code>, <code>WORLD</code>, <code>HUD</code> or <code>PLAYER</code>. Defaults to <code>PLAYER</code>.</td></tr>
-        <tr><td><code>isCheat</code></td><td>Boolean</td><td>Marks the module as a cheat.</td></tr>
+        <tr><td><code>category</code></td><td>String</td><td><code>MOVEMENT</code>, <code>COMBAT</code>, <code>RENDER</code>, <code>WORLD</code>, <code>HUD</code>, <code>PLAYER</code>, or <code>MINIGAMES</code>. Defaults to <code>PLAYER</code>.</td></tr>
+        <tr><td><code>isCheat</code></td><td>Boolean</td><td>Marks the module as a cheat (can be hidden on strict servers).</td></tr>
         <tr><td><code>settings</code></td><td>Array</td><td>Array of setting objects (see below).</td></tr>
       </tbody>
     </table>
@@ -161,33 +162,17 @@ myMod.onUpdate = function() {
     <p>Settings allow users to configure your script via the ClickGUI. They are passed in the <code>settings</code> array during registration.</p>
 
     <h3>Boolean Setting</h3>
-    <pre><code>{
-    type: "boolean",
-    name: "Spam",
-    value: true
-}</code></pre>
+    <pre><code>{ type: "boolean", name: "Spam", value: true }</code></pre>
 
     <h3>Number Setting</h3>
-    <pre><code>{
-    type: "number",
-    name: "Delay",
-    value: 50,
-    min: 0,
-    max: 1000,
-    step: 10
-}</code></pre>
+    <pre><code>{ type: "number", name: "Delay", value: 50, min: 0, max: 1000, step: 10 }</code></pre>
 
     <h3>Mode Setting</h3>
-    <pre><code>{
-    type: "mode",
-    name: "Mode",
-    value: "Normal",
-    modes: ["Normal", "Aggressive", "Passive"]
-}</code></pre>
+    <pre><code>{ type: "mode", name: "Mode", value: "Normal", modes: ["Normal", "Aggressive", "Passive"] }</code></pre>
 
-    <p>To read a setting's value inside your mod callbacks, you can find it in the module's settings array:</p>
-    <pre><code>var delaySetting = myMod.settings.find(s => s.name === "Delay");
-var currentDelay = delaySetting.value;</code></pre>
+    <p>To read or update settings dynamically via the Bridge API:</p>
+    <pre><code>var val = dc.getModSetting("MyMod", "Delay");
+dc.setModSetting("MyMod", "Delay", 100);</code></pre>
 
     <h2 id="mod-callbacks">Mod Callbacks</h2>
     <p>Once registered, you can assign functions to your module object to hook into game loops.</p>
@@ -204,43 +189,63 @@ var currentDelay = delaySetting.value;</code></pre>
 
     <h2 id="bridge-api">Bridge API (dc.*)</h2>
     <p>The <code>dc</code> global object provides methods to interact with the game state.</p>
+    
+    <h3>Chat & Commands</h3>
     <table>
       <tbody>
         <tr><td><code>dc.chat(msg)</code></td><td>Prints a localized message to the user's chat box (not sent to server).</td></tr>
         <tr><td><code>dc.sendChat(msg)</code></td><td>Sends a message to the server, visible to other players.</td></tr>
+        <tr><td><code>dc.sendCommand(cmd)</code></td><td>Executes a slash command. Automatically adds '/' if missing.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Mod Control</h3>
+    <table>
+      <tbody>
         <tr><td><code>dc.enableMod(name)</code></td><td>Force enables a module.</td></tr>
         <tr><td><code>dc.disableMod(name)</code></td><td>Force disables a module.</td></tr>
         <tr><td><code>dc.toggleMod(name)</code></td><td>Toggles a module's state.</td></tr>
-        <tr><td><code>dc.setSetting(mod, set, val)</code></td><td>Updates a setting programmatically.</td></tr>
+        <tr><td><code>dc.isEnabled(name)</code></td><td>Returns <code>true</code> if the specified mod is currently active.</td></tr>
       </tbody>
     </table>
+
+    <h3>Visuals & Audio</h3>
+    <table>
+      <tbody>
+        <tr><td><code>dc.playSound(name, vol, pitch)</code></td><td>Plays a client-side sound (e.g., <code>"random.orb"</code>, <code>1.0</code>, <code>1.0</code>).</td></tr>
+        <tr><td><code>dc.showTitle(title, subtitle)</code></td><td>Displays big text in the center of the screen. Subtitle is optional.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="game-state">Game State</h2>
+    <p>You can retrieve current information about the player or world state. <em>Note: These return JSON objects that are updated every tick.</em></p>
+    <pre><code>var player = dc.getPlayer();
+if (player) {
+    dc.chat("I am at Y: " + player.y + " with " + player.health + " HP.");
+    if (player.onGround) {
+        // Player is touching the floor
+    }
+}</code></pre>
 
     <h2 id="events">Event System</h2>
     <p>Instead of tying logic to a specific mod, you can listen to global events using <code>dc.on(eventName, callback)</code>.</p>
 
-    <h3><code>tick</code></h3>
-    <p>Fires every client tick. The payload includes basic player data.</p>
-    <pre><code>dc.on("tick", function(payloadStr) {
-    var player = JSON.parse(payloadStr);
-    // player.x, player.y, player.z
-    // player.health, player.maxHealth
-    // player.onGround (boolean)
-});</code></pre>
+    <h3>Available Events</h3>
+    <table>
+      <tbody>
+        <tr><td><code>tick</code></td><td>Fires every client tick. Payload contains the player state JSON.</td></tr>
+        <tr><td><code>chat_receive</code></td><td>Fires when a chat message is received from the server. Payload contains <code>message</code>.</td></tr>
+        <tr><td><code>mod_enable</code></td><td>Fires when any module is toggled on. Payload contains <code>name</code>.</td></tr>
+        <tr><td><code>mod_disable</code></td><td>Fires when any module is toggled off. Payload contains <code>name</code>.</td></tr>
+        <tr><td><code>mod_register</code></td><td>Fires when a new module is registered into the system.</td></tr>
+      </tbody>
+    </table>
 
-    <h3><code>chat_receive</code></h3>
-    <p>Fires when a chat message is received from the server.</p>
-    <pre><code>dc.on("chat_receive", function(payloadStr) {
-    var data = JSON.parse(payloadStr);
+    <pre><code>dc.on("chat_receive", function(data) {
     if (data.message.includes("joined the game")) {
-        dc.chat("Someone joined!");
+        dc.playSound("random.levelup", 1.0, 1.0);
+        dc.showTitle("\u00a7aPlayer Joined!", data.message);
     }
-});</code></pre>
-
-    <h3><code>mod_enable</code> & <code>mod_disable</code></h3>
-    <p>Fires when any module is toggled.</p>
-    <pre><code>dc.on("mod_enable", function(payloadStr) {
-    var data = JSON.parse(payloadStr);
-    dc.chat("Mod enabled: " + data.name);
 });</code></pre>
 
     <h2 id="data-persistence">Data Persistence</h2>
