@@ -2,6 +2,11 @@
 
 ## Newest Version: V1.2.7
 
+# Announcement:
+  I am currently working on a **HUGE** update, which is why the next version is taking so long. But trust me guys, this one will be nice 👍 😁
+
+Now back to your regularly scheduled programming :D
+
 **DeathClient** is a powerful **EaglerCraft 1.8.8 hack client** built for players who want **more control, more tools, and more possibilities** while playing in the browser.
 
 It includes **legit-friendly tools** and **advanced hacked modules**, allowing you to choose how you play.
