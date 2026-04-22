@@ -3,7 +3,8 @@
 ## Newest Version: V1.2.7
 
 # Announcement:
-  I am currently working on a **HUGE** update, which is why the next version is taking so long. But trust me guys, this one will be nice 👍 😁
+  I'm excited to announce that I will be releasing V1.3.0 TODAY!! Watch for the release notes to see what's coming!
+
 
 Now back to your regularly scheduled programming :D
 
