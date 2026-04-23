@@ -12,6 +12,9 @@ Now back to your regularly scheduled programming :D
 
 It includes **legit-friendly tools** and **advanced hacked modules**, allowing you to choose how you play.
 
+### Need some example plugins? Check (here!)[https://github.com/Death68093/DeathClient-EaglerCraft-/wiki/Example-Plugins]
+https://github.com/Death68093/DeathClient-EaglerCraft-/wiki/Example-Plugins
+
 
 ### Be sure to star the repo to support me!
 
