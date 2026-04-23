@@ -1,9 +1,9 @@
 # 💀 DeathClient – EaglerCraft Hack Client
 
-## Newest Version: V1.3.0
+## Newest Version: V1.3.1
 
 # Announcement:
-  ## V1.3.0 IS OUT!!
+  ## No Announcments
 
 
 Now back to your regularly scheduled programming :D
