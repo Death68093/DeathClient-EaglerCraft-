@@ -173,10 +173,15 @@ dc.createSetting("Slider", "Delay", 50, 0, 1000)</code></pre>
     <pre><code>// (Type, Name, DefaultValue, ArrayOfModes)
 dc.createSetting("Mode", "Style", "Normal", ["Normal", "Aggressive", "Passive"])</code></pre>
 
+    <h3>String (Text) Setting <span style="color:var(--green);font-size:12px;font-weight:bold;">NEW</span></h3>
+    <pre><code>// (Type, Name, DefaultValue)
+dc.createSetting("String", "Message", "Hello World!")</code></pre>
+
     <p>To read settings dynamically during callbacks, use the injected <code>settingsCache</code> object:</p>
     <pre><code>onUpdate: function(settings) {
-    if (settings["Spam Mode"].value) {
+    if (settings["Spam Mode"] && settings["Spam Mode"].value) {
         let delay = settings["Delay"].value;
+        let message = settings["Message"].value;
         // Do something
     }
 }</code></pre>
