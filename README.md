@@ -24,10 +24,6 @@ https://github.com/Death68093/DeathClient-EaglerCraft-/wiki/Example-Plugins
 
 # 🎮 Play DeathClient
 
-## Official Site: http://eagler.deathevents.lol
-
-or if it's blocked
-
 ## 👉 https://death68093.github.io/DeathClient-EaglerCraft-/
 
 ✔ No download  
