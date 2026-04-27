@@ -2,7 +2,7 @@
 
 ## Newest Version: V1.3.1
 
-### Screenshots: [[https://github.com/Death68093/DeathClient-EaglerCraft-/blob/main/README.md#screenshots-1](https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#screenshots)](https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots)
+### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
 # Announcement:
   ## No Announcments
