@@ -1,6 +1,6 @@
 # 💀 DeathClient – EaglerCraft Hack Client
 
-## Newest Version: V1.3.1
+## Newest Version: V1.3.3 (beta) or v1.3.2 (stable)
 
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
@@ -23,10 +23,6 @@ https://github.com/Death68093/DeathClient-EaglerCraft-/wiki/Example-Plugins
 ---
 
 # 🎮 Play DeathClient
-
-## Official Site: http://eagler.deathevents.lol
-
-or if it's blocked
 
 ## 👉 https://death68093.github.io/DeathClient-EaglerCraft-/
 
