@@ -1,16 +1,11 @@
 # 💀 DeathClient – EaglerCraft Hack Client
 
-## Newest Version: V1.3.3
+## Newest Version: V1.3.3 (stable) or v1.3.4 (beta)
 
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
 # Announcement:
-  ## WE GOT A.I!!
-  **Do you know what baritone is? .. No?** <br>
-  Well Baritone is a minecraft mod which adds A.I to your game. It adds features such as auto-mine, atuo-farm and more!
-  What I decided to do was create my own version of this (I did not use baritone) which allows you to auto-mine, auto-farm and more!
-  Check out the new commands with ```#help```!
-  Let met know what you think!
+  - None
 
 **Now back to your regularly scheduled programming :D**
 
