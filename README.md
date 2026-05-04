@@ -19,6 +19,15 @@ https://github.com/Death68093/DeathClient-EaglerCraft-/wiki/Example-Plugins
 
 ### Be sure to star the repo to support me!
 
+### How to fix the client not updating:
+  1. Press CTRL+SHIFT+R or CTRL+f5
+  If that doesn't work:
+  1. Clear browser cache
+  2. Press CTRL+SHIFT+R or CTRL+f5
+
+  if you need more help, please ask in issues
+
+
 ---
 
 # 🎮 Play DeathClient
