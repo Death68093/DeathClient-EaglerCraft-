@@ -23,7 +23,18 @@ for (const majorVersion in versionData) {
         }
 
         btn.onclick = () => {
-            window.location.href = `versions/${majorVersion}/legit/${v}/index.html`;
+            // Format the current version data so the modal menu can read it
+            const versionDataObj = {
+                name: v,
+                isBeta: v.toLowerCase().includes("beta"),
+                hasJS: true,   // Assuming all your versions have a JS file
+                hasWASM: true, // Set to true if it has a WASM file
+                urlJS: `versions/${majorVersion}/legit/${v}/index.html`,
+                urlWASM: `versions/${majorVersion}/legit/${v}/wasm.html` // Change this if your WASM file is named differently
+            };
+            
+            // Send the data to the modal. "false" means they didn't use the "Play Latest" button.
+            handleVersionSelect(versionDataObj, false);
         };
         block.appendChild(btn);
     });

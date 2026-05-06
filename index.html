@@ -323,6 +323,20 @@ h1:hover::after {
 .card--docs:hover .icon-gfx { filter: drop-shadow(0 0 28px #3399ff); }
 .card--docs .card-glow { background: radial-gradient(ellipse at 50% 0%, rgba(51,153,255,.1) 0%, transparent 70%); }
 
+/* ── Latest Card Accent Colours ── */
+.card--latest .card-icon { background: #090909; }
+.card--latest .card-sub  { color: var(--green); }
+.card--latest::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.card--latest:hover { border-color: #00331a; }
+.card--latest .card-cta { color: #333; }
+.card--latest:hover .card-cta { color: var(--green); }
+.card--latest .icon-gfx { filter: drop-shadow(0 0 16px rgba(0,204,102,.4)); }
+.card--latest:hover .icon-gfx { filter: drop-shadow(0 0 28px var(--green)); }
+.card--latest .card-glow { background: radial-gradient(ellipse at 50% 0%, rgba(0,204,102,.1) 0%, transparent 70%); }
+
+/* Optional: Allow cards to wrap if screen gets too small for 3 cards */
+.cards { flex-wrap: wrap; justify-content: center; }
+
 /* ── status bar ── */
 .status-bar {
   position: fixed;
@@ -494,6 +508,24 @@ h1:hover::after {
 
   <div class="cards">
 
+    <a class="card card--latest" href="#" onclick="openLatestModal(event)">
+      <div class="card-glow"></div>
+      <div class="card-icon">
+        <div class="hex-bg"></div>
+        <span class="icon-gfx">🚀</span>
+      </div>
+      <div class="card-body">
+        <div class="card-sub">Quick Launch</div>
+        <div class="card-title">Play Latest</div>
+        <div class="card-desc">
+          Instantly jump into the most recent Stable or Beta build. Automatically prompts for JS or WASM engine.
+        </div>
+        <div class="card-cta">
+          Select Channel <span class="arrow">→</span>
+        </div>
+      </div>
+    </a>
+
     <a class="card card--launch" href="#" onclick="openVersionModal(event)">
       <div class="card-glow"></div>
       <div class="card-icon">
@@ -580,7 +612,7 @@ const clientVersions = [
   { name: "1.3.2", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.2/js/index.html", urlWASM: "./client/versions/1.3.2/wasm/index.html" },
   { name: "1.3.3", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.3/js/index.html", urlWASM: "./client/versions/1.3.3/wasm/index.html" },
   { name: "1.3.4", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.4/js/index.html", urlWASM: "./client/versions/1.3.4/wasm/index.html" },
-  { name: "1.3.5-beta", isBeta: true, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.5/js/index.html", urlWASM: "./client/versions/1.3.5/wasm/index.html" },
+  { name: "1.4.0", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.4.0/js/index.html", urlWASM: "./client/versions/1.4.0/wasm/index.html" },
 ];
 
 /* ── Modal Logic ── */
@@ -689,11 +721,11 @@ function renderPatches() {
   modalContent.appendChild(backBtn);
 }
 
-// PAGE 4: Engine / Final Selection
-function handleVersionSelect(v) {
+// PAGE 4: Engine / Final Selection (UPDATED to support flow origins)
+function handleVersionSelect(v, isFromLatest = false) {
   // If it supports both, ask which one. Otherwise, just launch the supported one.
   if (v.hasJS && v.hasWASM) {
-    renderEngines(v);
+    renderEngines(v, isFromLatest);
   } else if (v.hasJS) {
     window.location.href = v.urlJS;
   } else if (v.hasWASM) {
@@ -701,7 +733,7 @@ function handleVersionSelect(v) {
   }
 }
 
-function renderEngines(v) {
+function renderEngines(v, isFromLatest = false) {
   modalTitle.innerText = `Launch v${v.name}`;
   modalContent.innerHTML = '';
   
@@ -723,9 +755,66 @@ function renderEngines(v) {
 
   const backBtn = document.createElement('button');
   backBtn.className = 'modal-btn back-btn';
-  backBtn.innerHTML = "← Back to Patches";
-  backBtn.onclick = () => renderPatches();
+  backBtn.innerHTML = "← Back";
+  // Dynamically route the back button depending on how they got here
+  backBtn.onclick = () => {
+    if (isFromLatest) openLatestModal();
+    else renderPatches();
+  };
   modalContent.appendChild(backBtn);
+}
+
+/* ── Play Latest Logic ── */
+function getLatestVersions() {
+  // Sort versions accurately (e.g. 1.10.0 is newer than 1.2.0)
+  const sortedVersions = [...clientVersions].sort((a, b) => {
+    const pa = a.name.split('.').map(Number);
+    const pb = b.name.split('.').map(Number);
+    for(let i = 0; i < 3; i++) {
+      if ((pa[i] || 0) > (pb[i] || 0)) return 1;
+      if ((pa[i] || 0) < (pb[i] || 0)) return -1;
+    }
+    return 0;
+  });
+
+  // Find the highest beta and highest non-beta
+  const latestStable = sortedVersions.filter(v => !v.isBeta).pop();
+  const latestBeta = sortedVersions.filter(v => v.isBeta).pop();
+
+  return { latestStable, latestBeta };
+}
+
+function openLatestModal(e) {
+  if (e) e.preventDefault();
+  const { latestStable, latestBeta } = getLatestVersions();
+  
+  modalTitle.innerText = "Select Release Channel";
+  modalContent.innerHTML = '';
+  
+  // Create Stable Button
+  if (latestStable) {
+    const btnStable = document.createElement('button');
+    btnStable.className = 'modal-btn';
+    btnStable.innerHTML = `<span>Stable (v${latestStable.name})</span> <span style="color:var(--green); font-size:10px;">LATEST</span>`;
+    btnStable.onclick = () => handleVersionSelect(latestStable, true);
+    modalContent.appendChild(btnStable);
+  }
+  
+  // Create Beta Button (if one exists)
+  if (latestBeta) {
+    const btnBeta = document.createElement('button');
+    btnBeta.className = 'modal-btn';
+    btnBeta.innerHTML = `<span>Beta (v${latestBeta.name})</span> <span style="color:var(--red2); font-size:10px;">EXPERIMENTAL</span>`;
+    btnBeta.onclick = () => handleVersionSelect(latestBeta, true);
+    modalContent.appendChild(btnBeta);
+  }
+
+  // If there are no versions at all, display a message
+  if (!latestStable && !latestBeta) {
+    modalContent.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px;">No versions available.</div>';
+  }
+
+  modalOverlay.classList.remove('hidden');
 }
 
 
