@@ -1,11 +1,12 @@
 # 💀 DeathClient – EaglerCraft Hack Client
 
-## Newest Version: v1.4.0
+## Newest Version: v1.4.0 (stable) v1.4.1 (beta)
 
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
 # Announcement:
-  - BIIIIGGG Update coming soon!!
+  - Now with Java edition support! (check wiki for more info)
+  - Now with custom Clientside chat!. You can be in a singleplayer world and talk to your friends that are in a multiplayer world!
 
 **Now back to your regularly scheduled programming :D**
 
