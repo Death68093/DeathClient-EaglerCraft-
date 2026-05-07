@@ -10,7 +10,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.on("upgrade", (req, socket, head) => {
-    // This handles the Wisp protocol handshake
     wisp.routeRequest(req, socket, head);
 });
 
