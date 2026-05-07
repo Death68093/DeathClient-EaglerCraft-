@@ -7,6 +7,8 @@
 # Announcement:
   - Now with Java edition support! (check wiki for more info)
   - Now with custom Clientside chat!. You can be in a singleplayer world and talk to your friends that are in a multiplayer world!
+      - Type  ```@YOUR_MESSAGE_HERE``` to send a message globally
+      - Type ```/cmsg <player> <message>``` to send a private message (This will be change to `#msg <player> <message>` shortly 
 
 **Now back to your regularly scheduled programming :D**
 
