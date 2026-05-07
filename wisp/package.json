@@ -2,11 +2,11 @@
   "name": "wispcraft-for-deathclient",
   "version": "1.0.0",
   "description": "A wispcraft server for my EaglerCraft client",
-  "main": "server.js",
+  "main": "server.mjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.mjs"
   },
   "repository": {
     "type": "git",

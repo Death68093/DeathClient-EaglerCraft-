@@ -1,5 +1,6 @@
 import http from "node:http";
 import { server as wisp } from "@mercuryworkshop/wisp-js";
+import "dotenv/config";
 
 const port = process.env.PORT || 10000;
 
