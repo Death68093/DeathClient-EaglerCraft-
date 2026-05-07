@@ -724,6 +724,27 @@ function renderPatches() {
 
 // PAGE 4: Engine / Final Selection (UPDATED to support flow origins)
 function handleVersionSelect(v, isFromLatest = false) {
+  
+  // 1. Check if they are picking an old version manually from the list
+  if (!isFromLatest) {
+    const { latestStable, latestBeta } = getLatestVersions();
+    
+    // Check if the selected version is NOT the latest stable or latest beta
+    const isLatest = (latestStable && v.name === latestStable.name) || 
+                     (latestBeta && v.name === latestBeta.name);
+                     
+    if (!isLatest) {
+      // Trigger the alert asking them to upgrade
+      const wantsUpgrade = confirm(`You are about to launch an older version (v${v.name}).\n\nWould you like to upgrade to the newest version instead?`);
+      
+      if (wantsUpgrade) {
+        openLatestModal(); // Route them to the Play Latest screen
+        return;            // Stop the current launch process completely
+      }
+    }
+  }
+
+  // 2. Proceed with launching if they clicked "Cancel" or picked the latest version
   // If it supports both, ask which one. Otherwise, just launch the supported one.
   if (v.hasJS && v.hasWASM) {
     renderEngines(v, isFromLatest);
