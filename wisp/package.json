@@ -5,23 +5,17 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Death68093/wispcraft-for-deathclient.git"
+    "url": "git+https://github.com"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/Death68093/wispcraft-for-deathclient/issues"
-  },
-  "homepage": "https://github.com/Death68093/wispcraft-for-deathclient#readme",
   "dependencies": {
     "@mercuryworkshop/wisp-js": "^0.4.1",
-    "dotenv": "^17.4.2"
+    "dotenv": "^16.0.0"
   }
 }
