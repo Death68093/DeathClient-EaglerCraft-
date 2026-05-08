@@ -1,6 +1,6 @@
 # 💀 DeathClient – EaglerCraft Hack Client
 
-## Newest Version: v1.4.0 (stable) v1.4.1 (beta)
+## Newest Version: v1.4.1
 
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
@@ -8,7 +8,10 @@
   - Now with Java edition support! (check wiki for more info)
   - Now with custom Clientside chat!. You can be in a singleplayer world and talk to your friends that are in a multiplayer world!
       - Type  ```@YOUR_MESSAGE_HERE``` to send a message globally
-      - Type ```/cmsg <player> <message>``` to send a private message (This will be change to `#msg <player> <message>` shortly 
+      - Type ```#msg <player> <message>``` to send a private message
+  - WE GOT VOICECHAT!
+    - Enable it in settings (client settings, not game settings)
+    - Set your PTT (push to talk) button (default 'V') 
 
 **Now back to your regularly scheduled programming :D**
 
