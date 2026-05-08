@@ -114,10 +114,11 @@
     <a href="#getting-started">Getting Started</a>
     <a href="#mod-registration">Mod Registration</a>
     <a href="#settings">Settings API</a>
-    <a href="#commands">Commands API <span style="color:var(--green);font-size:10px;">NEW</span></a>
+    <a href="#commands">Commands API</a>
     <a href="#mod-callbacks">Mod Callbacks</a>
+    <a href="#hud-mods">HUD Mods <span style="color:var(--green);font-size:10px;">NEW</span></a>
     <a href="#bridge-api">Bridge API (dc.*)</a>
-    <a href="#game-state">Game State</a>
+    <a href="#game-state">Game State & Mutation <span style="color:var(--green);font-size:10px;">NEW</span></a>
     <a href="#events">Event System</a>
     <a href="#data-persistence">Data Persistence</a>
   </nav>
@@ -199,7 +200,7 @@ dc.createSetting("String", "Message", "Hello World!")</code></pre>
 });</code></pre>
 
     <h2 id="mod-callbacks">Mod Callbacks</h2>
-    <p>Assign functions to your module object to hook into game loops. Callbacks are automatically passed your mod's current `settingsCache`.</p>
+    <p>Assign functions to your module object to hook into game loops. Callbacks are automatically passed your mod's current <code>settingsCache</code>.</p>
     <table>
       <tbody>
         <tr><td><code>onEnable(settings)</code></td><td>Called when the module is toggled on.</td></tr>
@@ -207,6 +208,59 @@ dc.createSetting("String", "Message", "Hello World!")</code></pre>
         <tr><td><code>onUpdate(settings)</code></td><td>Called every client tick (usually 20 times per second).</td></tr>
         <tr><td><code>onRender2D(settings)</code></td><td>Called every frame. Useful for drawing custom HUD elements.</td></tr>
         <tr><td><code>onChat(message)</code></td><td>Called when an incoming chat message is received from the server.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="hud-mods">HUD Mods (Draggable & Resizable)</h2>
+    <p>If you want your plugin to render visual elements on the screen that users can drag around and resize in the <b>HUD Editor</b>, you must use <code>dc.createHudMod(config)</code> instead of the standard <code>createMod</code> function.</p>
+    
+    <p>HUD Mods require two extra properties: <code>width</code> and <code>height</code>. These tell the GUI Editor how big the green bounding box should be when the user is dragging your mod. Inside your <code>onRender2D</code> event, you must use <code>this.x</code> and <code>this.y</code> to draw your elements, as these values update in real-time when the user moves your mod.</p>
+
+    <div style="background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; overflow-x: auto; margin-bottom: 20px;">
+<pre style="color: var(--text); font-family: Consolas, monospace; font-size: 14px;"><code><span style="color: var(--kw);">const</span> dc = window.DeathClient;
+
+dc.createHudMod({
+  name: <span style="color: var(--str);">"Watermark"</span>,
+  description: <span style="color: var(--str);">"Displays a custom client watermark"</span>,
+  category: <span style="color: var(--str);">"HUD"</span>,
+  
+  <span style="color: var(--com);">// REQUIRED: Defines the size of the green drag-box in the HUD Editor</span>
+  width: 80,  
+  height: 12, 
+  
+  onRender2D: <span style="color: var(--kw);">function</span>() {
+    <span style="color: var(--com);">// this.x, this.y, and this.scale are automatically updated by the Java backend!</span>
+    <span style="color: var(--com);">// You must use them as your X and Y coordinates when drawing.</span>
+    
+    <span style="color: var(--kw);">let</span> text = <span style="color: var(--str);">"DeathClient JS"</span>;
+    
+    <span style="color: var(--com);">// Example: Assuming you have a dc.drawString method mapped in your JSBridge</span>
+    dc.drawString(text, <span style="color: var(--kw);">this</span>.x, <span style="color: var(--kw);">this</span>.y, 0xFFFFFF, <span style="color: var(--kw);">true</span>);
+  }
+});</code></pre>
+    </div>
+
+    <p><b>Reactive Variables Available in HUD Mods:</b></p>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+      <thead>
+        <tr style="background: var(--bg3); border-bottom: 2px solid var(--border);">
+          <th style="padding: 10px; text-align: left;">Variable</th>
+          <th style="padding: 10px; text-align: left;">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><code>this.x</code></td>
+          <td style="padding: 10px;">The current absolute X position of the mod on the screen.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><code>this.y</code></td>
+          <td style="padding: 10px;">The current absolute Y position of the mod on the screen.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><code>this.scale</code></td>
+          <td style="padding: 10px;">The current size multiplier (modified by scroll wheel in the HUD editor). Use this if you are doing custom OpenGL scaling in your JS.</td>
+        </tr>
       </tbody>
     </table>
 
@@ -242,16 +296,42 @@ dc.createSetting("String", "Message", "Hello World!")</code></pre>
       </tbody>
     </table>
 
-    <h2 id="game-state">Game State</h2>
-    <p>You can retrieve current information about the player state dynamically. <em>Note: These return JSON objects that are updated every tick.</em></p>
-    <pre><code>var player = dc.getPlayer();
-if (player) {
-    dc.chat("Hello " + player.name + "!");
-    dc.chat("I am at Y: " + player.y + " with " + player.health + " HP.");
-    if (player.onGround) {
-        // Player is touching the floor
-    }
+    <h2 id="game-state">Game State & Mutation <span style="color:var(--green);font-size:12px;font-weight:bold;">NEW</span></h2>
+    <p>You can now directly read and modify the player and world state natively! Property mutations are pushed to the Java engine automatically through a Two-Way Queue System.</p>
+    
+    <h3>Player API (<code>dc.player</code>)</h3>
+    <p>Directly access and mutate the local player entity.</p>
+    <table>
+      <tbody>
+        <tr><td><strong>Mutable Properties</strong></td><td><code>x</code>, <code>y</code>, <code>z</code>, <code>motionX</code>, <code>motionY</code>, <code>motionZ</code>, <code>yaw</code>, <code>pitch</code></td></tr>
+        <tr><td><strong>Read-Only Properties</strong></td><td><code>name</code>, <code>health</code>, <code>maxHealth</code>, <code>onGround</code></td></tr>
+        <tr><td><strong>Methods</strong></td><td><code>jump()</code></td></tr>
+      </tbody>
+    </table>
+    <pre><code>// Teleport the player up by 6 blocks
+dc.player.y += 6;
+
+// Freeze player in the air (Flight/Hover)
+dc.player.motionY = 0;
+
+// Spinbot example
+dc.player.yaw += 45;
+
+// Jump check
+if (dc.player.onGround) {
+    dc.player.jump();
 }</code></pre>
+
+    <h3>World API (<code>dc.world</code>)</h3>
+    <p>Access and manipulate the current dimension and world state.</p>
+    <table>
+      <tbody>
+        <tr><td><strong>Mutable Properties</strong></td><td><code>time</code></td></tr>
+        <tr><td><strong>Read-Only Properties</strong></td><td><code>raining</code></td></tr>
+      </tbody>
+    </table>
+    <pre><code>// Make it permanent daytime
+dc.world.time = 6000;</code></pre>
 
     <h2 id="events">Event System</h2>
     <p>Instead of tying logic to a specific mod, you can listen to global events using <code>dc.on(eventName, callback)</code>.</p>
