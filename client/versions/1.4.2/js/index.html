@@ -82,8 +82,8 @@
 	</head>
 	<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
 	</div>
-
-	<script>
+    <!-- Disabled VC for now
+        <script>
         let voiceWs = null;
         let micStream = null;
         let mediaRecorder = null;
@@ -91,96 +91,114 @@
 
         let vcSettings = { enabled: true, pttKeyCode: 'KeyV' };
 
-        // 1. CONSOLE WIRETAP (Java -> JS Bridge)
-        // Intercepts the System.out.println from your Java GuiClientSettings!
-        const originalConsoleLog = console.log;
-        console.log = function(...args) {
-            if (args[0] && typeof args[0] === 'string' && args[0].startsWith("[DEATH-VC-SYNC]")) {
-                try {
-                    const data = JSON.parse(args[0].replace("[DEATH-VC-SYNC] ", ""));
-                    vcSettings.enabled = data.enabled;
-                    vcSettings.pttKeyCode = data.ptt;
+        // 1. MASTER CONSOLE WIRETAP (Java -> JS Bridge)
+        // Intercepts log, info, warn, and error to guarantee we catch TeaVM's output
+        ['log', 'info', 'warn', 'error'].forEach(function(method) {
+            const originalConsoleFunc = console[method];
+            console[method] = function(...args) {
+                if (args[0] && typeof args[0] === 'string') {
                     
-                    if (!vcSettings.enabled) stopVoiceChat();
-                    else if (myUsername) startVoiceChat();
+                    // Catch Settings Sync
+                    if (args[0].includes("[DEATH-VC-SYNC]")) {
+                        try {
+                            const jsonStr = args[0].substring(args[0].indexOf("{")); 
+                            const data = JSON.parse(jsonStr);
+                            
+                            vcSettings.enabled = data.enabled;
+                            vcSettings.pttKeyCode = data.ptt;
+                            
+                            if (!vcSettings.enabled) stopVoiceChat();
+                            else if (myUsername) startVoiceChat();
+                            
+                            originalConsoleFunc.apply(console, ["[DEATH-VC] Settings Synced!"]);
+                            return; 
+                        } catch(e){}
+                    }
                     
-                    originalConsoleLog.apply(console, ["[DEATH-VC] Settings Synced with Java Engine!"]);
-                    return; // Hide the raw JSON from the actual console
-                } catch(e){}
-            }
-            originalConsoleLog.apply(console, args);
-        };
+                    // Catch Username Join
+                    else if (args[0].includes("[DEATH-VC-JOIN]")) {
+                        myUsername = args[0].split("[DEATH-VC-JOIN]")[1].trim();
+                        
+                        // We use console.log specifically here so it stands out
+                        console.log("[DEATH-VC] Linked to player: " + myUsername);
+                        
+                        if (vcSettings.enabled) setTimeout(() => startVoiceChat(), 500);
+                        return; // Hide the raw tag
+                    }
+                }
+                originalConsoleFunc.apply(console, args);
+            };
+        });
 
-        // 2. KEYBOARD INTERCEPTOR
+        // 2. KEYBOARD INTERCEPTOR (Walkie-Talkie Mode)
         window.addEventListener('keydown', (e) => {
-            if (vcSettings.enabled && e.code === vcSettings.pttKeyCode && micStream && !e.repeat) {
-                micStream.getAudioTracks().forEach(track => track.enabled = true); // Unmute
+            // Start recording when PTT is held down
+            if (vcSettings.enabled && e.code === vcSettings.pttKeyCode && mediaRecorder && !e.repeat) {
+                if (mediaRecorder.state === 'inactive') {
+                    mediaRecorder.start(); // Starts a fresh, clean recording
+                }
             }
         }, { capture: true });
 
         window.addEventListener('keyup', (e) => {
-            if (vcSettings.enabled && e.code === vcSettings.pttKeyCode && micStream) {
-                micStream.getAudioTracks().forEach(track => track.enabled = false); // Mute
+            // Stop recording when PTT is released
+            if (vcSettings.enabled && e.code === vcSettings.pttKeyCode && mediaRecorder) {
+                if (mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop(); // Triggers ondataavailable to send the file
+                }
             }
         }, { capture: true });
 
-        // 3. WEBSOCKET WIRETAP (Intercepts Eaglercraft Username)
-        const originalSend = WebSocket.prototype.send;
-        WebSocket.prototype.send = function(data) {
-            let dataStr = "";
-            if (typeof data === 'string') dataStr = data;
-            else if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
-                try { dataStr = new TextDecoder().decode(data); } catch(e) {}
-            }
-
-            if (dataStr.includes('"type":"join"') && dataStr.includes('"user":')) {
-                try {
-                    const parsed = JSON.parse(dataStr);
-                    if (parsed.type === 'join' && parsed.user) {
-                        myUsername = parsed.user;
-                        if (vcSettings.enabled) setTimeout(() => startVoiceChat(), 1000);
-                    }
-                } catch (e) {}
-            }
-            return originalSend.call(this, data);
-        };
-
-        // 4. VOICE ENGINE
+        // 3. VOICE ENGINE
         async function startVoiceChat() {
             if (!myUsername || !vcSettings.enabled) return;
             if (voiceWs && voiceWs.readyState === WebSocket.OPEN) return; 
 
             try {
+                // This triggers the browser's "Allow Microphone" popup
                 micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                micStream.getAudioTracks().forEach(track => track.enabled = false); // Mute until PTT is pressed
 
-                // IMPORTANT: Put your Render URL here!
-                voiceWs = new WebSocket("wss://your-render-url.onrender.com");
+                voiceWs = new WebSocket("wss://deathclient-chat.deathevents.lol");
                 voiceWs.binaryType = "blob"; 
 
                 voiceWs.onopen = () => {
+                    // Send the handshake packet to your Node.js server
                     voiceWs.send(JSON.stringify({ type: 'join-voice', user: myUsername }));
+                    
                     mediaRecorder = new MediaRecorder(micStream);
+                    
+                    // This fires automatically when you RELEASE the PTT key and mediaRecorder.stop() is called
                     mediaRecorder.ondataavailable = (e) => {
-                        if (e.data.size > 0 && voiceWs.readyState === WebSocket.OPEN) voiceWs.send(e.data);
+                        if (e.data.size > 0 && voiceWs.readyState === WebSocket.OPEN) {
+                            voiceWs.send(e.data);
+                        }
                     };
-                    mediaRecorder.start(250); 
                 };
 
                 voiceWs.onmessage = (e) => {
+                    // Incoming voice data from other players!
                     if (e.data instanceof Blob) {
-                        new Audio(URL.createObjectURL(e.data)).play().catch(()=>{});
+                        const audioURL = URL.createObjectURL(e.data);
+                        const audioObj = new Audio(audioURL);
+                        
+                        // Prevent memory leaks by deleting the file from RAM after it plays!
+                        audioObj.onended = () => URL.revokeObjectURL(audioURL);
+                        
+                        audioObj.play().catch(err => console.log("Playback blocked by browser:", err));
                     }
                 };
-            } catch (err) { console.error("[DEATH-VC] Mic error: ", err); }
+            } catch (err) { 
+                console.error("[DEATH-VC] Mic error: ", err); 
+            }
         }
 
         function stopVoiceChat() {
-            if (mediaRecorder) mediaRecorder.stop();
+            if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
             if (micStream) micStream.getTracks().forEach(t => t.stop());
             if (voiceWs) voiceWs.close();
             mediaRecorder = null; micStream = null; voiceWs = null;
         }
         </script>
+    -->
 	</body>
 </html>
