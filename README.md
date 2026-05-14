@@ -5,12 +5,7 @@
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
 # Announcement:
-  - Now with Java edition support! (check wiki for more info)
-  - Now with custom Clientside chat!. You can be in a singleplayer world and talk to your friends that are in a multiplayer world!
-      - Type  ```@YOUR_MESSAGE_HERE``` to send a message globally
-      - Type ```#msg <player> <message>``` to send a private message
-  - Minimap!
-    - Coming in V1.4.2!
+  - V 1.12.2 COMING SOON!!
 
 **Now back to your regularly scheduled programming :D**
 
