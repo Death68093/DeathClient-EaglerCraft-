@@ -501,7 +501,7 @@ h1:hover::after {
     <div class="logo-wrap">
       <div class="logo-skull">💀</div>
       <h1 data-text="DeathClient">DeathClient</h1>
-      <div class="tagline">EaglerCraft 1.8 &nbsp;·&nbsp; by Death68093 &nbsp;<span>_</span></div>
+      <div class="tagline">EaglerCraft Client &nbsp;·&nbsp; by Death68093 &nbsp;<span>_</span></div>
       <div class="version-badge">v1.4.0</div>
     </div>
   </header>
@@ -587,7 +587,7 @@ h1:hover::after {
 <div id="modal-overlay" class="hidden">
   <div class="modal-box">
     <div class="modal-header">
-      <h2 id="modal-title">Select Version</h2>
+      <h2 id="modal-title">Select Base Version</h2>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div id="modal-content" class="modal-body">
@@ -597,24 +597,28 @@ h1:hover::after {
 
 <script>
 /* ── Version & Engine Configuration ── */
-// Add or remove your versions here. 
 // Ensure they follow the 'Major.Minor.Patch' format (e.g., "1.2.1").
+// ADDED: "base" property dictates if it's 1.8 or 1.12.
 const clientVersions = [
-  { name: "1.2.1", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.1/js/index.html", urlWASM: "./client/versions/1.2.1/wasm/index.html" },
-  { name: "1.2.2", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.2/js/index.html", urlWASM: "./client/versions/1.2.2/wasm/index.html" },
-  { name: "1.2.3", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.3/js/index.html", urlWASM: "./client/versions/1.2.3/wasm/index.html" },
-  { name: "1.2.4", hasJS: true, hasWASM: true, urlJS: "./client/versions/v1.2.4/js/index.html", urlWASM: "./client/versions/v1.2.4/wasm/index.html" },
-  { name: "1.2.5", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.5/js/index.html", urlWASM: "./client/versions/1.2.5/wasm/index.html" },
-  { name: "1.2.6", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.6/js/index.html", urlWASM: "./client/versions/1.2.6/wasm/index.html" },
-  { name: "1.2.7", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.7/js/index.html", urlWASM: "./client/versions/1.2.7/wasm/index.html" },
-  { name: "1.3.0", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.0/js/index.html", urlWASM: "./client/versions/1.3.0/wasm/index.html" },
-  { name: "1.3.1", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.1/js/index.html", urlWASM: "./client/versions/1.3.1/wasm/index.html" },
-  { name: "1.3.2", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.2/js/index.html", urlWASM: "./client/versions/1.3.2/wasm/index.html" },
-  { name: "1.3.3", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.3/js/index.html", urlWASM: "./client/versions/1.3.3/wasm/index.html" },
-  { name: "1.3.4", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.3.4/js/index.html", urlWASM: "./client/versions/1.3.4/wasm/index.html" },
-  { name: "1.4.0", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.4.0/js/index.html", urlWASM: "./client/versions/1.4.0/wasm/index.html"},
-  { name: "1.4.1", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.4.1/js/index.html", urlWASM: "./client/versions/1.4.1/wasm/index.html"},
-  { name: "1.4.2", isBeta: true, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.4.2/js/index.html", urlWASM: "./client/versions/1.4.2/wasm/index.html"},
+  // 1.8 vers
+  { base: "1.8", name: "1.2.1", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.2.1/js/index.html", urlWASM: "./client/versions/1.8/1.2.1/wasm/index.html" },
+  { base: "1.8", name: "1.2.2", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.2.2/js/index.html", urlWASM: "./client/versions/1.8/1.2.2/wasm/index.html" },
+  { base: "1.8", name: "1.2.3", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.2.3/js/index.html", urlWASM: "./client/versions/1.8/1.2.3/wasm/index.html" },
+  { base: "1.8", name: "1.2.4", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/v1.2.4/js/index.html", urlWASM: "./client/versions/1.8/v1.2.4/wasm/index.html" },
+  { base: "1.8", name: "1.2.5", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.2.5/js/index.html", urlWASM: "./client/versions/1.8/1.2.5/wasm/index.html" },
+  { base: "1.8", name: "1.2.6", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.2.6/js/index.html", urlWASM: "./client/versions/1.8/1.2。6/wasm/index.html" },
+  { base: "1.8", name: "1.2.7", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.2.7/js/index.html", urlWASM: "./client/versions/1.2.7/wasm/index.html" },
+  { base: "1.8", name: "1.3.0", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.3.0/js/index.html", urlWASM: "./client/versions/1.8/1.3.0/wasm/index.html" },
+  { base: "1.8", name: "1.3.1", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.3.1/js/index.html", urlWASM: "./client/versions/1.8/1.3.1/wasm/index.html" },
+  { base: "1.8", name: "1.3.2", hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.3.2/js/index.html", urlWASM: "./client/versions/1.8/1.3.2/wasm/index.html" },
+  { base: "1.8", name: "1.3.3", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.3.3/js/index.html", urlWASM: "./client/versions/1.8/1.3.3/wasm/index.html" },
+  { base: "1.8", name: "1.3.4", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.3.4/js/index.html", urlWASM: "./client/versions/1.8/1.3.4/wasm/index.html" },
+  { base: "1.8", name: "1.4.0", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.4.0/js/index.html", urlWASM: "./client/versions/1.8/1.4.0/wasm/index.html"},
+  { base: "1.8", name: "1.4.1", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.4.1/js/index.html", urlWASM: "./client/versions/1.8/1.4.1/wasm/index.html"},
+  { base: "1.8", name: "1.4.2", isBeta: false, hasJS: true, hasWASM: true, urlJS: "./client/versions/1.8/1.4.2/js/index.html", urlWASM: "./client/versions/1.8/1.4.2/wasm/index.html"},
+
+  // 1.12 vers
+  { base: "1.12", name: "1.4.2", isBeta: true, hasJS: true, hasWASM: false, urlJS: "./client/versions/1.12/1.4.2/js/index.html", urlWASM: "./client/versions/1.12/1.4.2/wasm/index.html"},
 ];
 
 /* ── Modal Logic ── */
@@ -623,12 +627,13 @@ const modalOverlay = document.getElementById('modal-overlay');
 const modalTitle = document.getElementById('modal-title');
 const modalContent = document.getElementById('modal-content');
 
+let selectedBase = null;
 let selectedMajor = null;
 let selectedMinor = null;
 
 function openVersionModal(e) {
   if (e) e.preventDefault();
-  renderMajors();
+  renderBases(false);
   modalOverlay.classList.remove('hidden');
 }
 
@@ -641,13 +646,37 @@ modalOverlay.addEventListener('click', function(e) {
   if (e.target === modalOverlay) closeModal();
 });
 
-// PAGE 1: Majors
-function renderMajors() {
-  modalTitle.innerText = "Select Major Version";
+// PAGE 0: Bases
+function renderBases(isFromLatest = false) {
+  modalTitle.innerText = "Select Base Version";
   modalContent.innerHTML = '';
   
-  // Extract unique major versions (e.g., ["1"])
-  const majors = [...new Set(clientVersions.map(v => v.name.split('.')[0]))];
+  // Extract unique bases
+  const bases = [...new Set(clientVersions.map(v => v.base))];
+  
+  bases.forEach(base => {
+    const btn = document.createElement('button');
+    btn.className = 'modal-btn';
+    btn.innerHTML = `<span>Minecraft ${base}</span> <span style="color:var(--muted); font-size:10px;">BASE</span>`;
+    btn.onclick = () => {
+      selectedBase = base;
+      if (isFromLatest) {
+        renderLatestForBase();
+      } else {
+        renderMajors();
+      }
+    };
+    modalContent.appendChild(btn);
+  });
+}
+
+// PAGE 1: Majors
+function renderMajors() {
+  modalTitle.innerText = `Select Major Version (${selectedBase})`;
+  modalContent.innerHTML = '';
+  
+  const filteredByBase = clientVersions.filter(v => v.base === selectedBase);
+  const majors = [...new Set(filteredByBase.map(v => v.name.split('.')[0]))];
   
   majors.forEach(major => {
     const btn = document.createElement('button');
@@ -659,6 +688,12 @@ function renderMajors() {
     };
     modalContent.appendChild(btn);
   });
+
+  const backBtn = document.createElement('button');
+  backBtn.className = 'modal-btn back-btn';
+  backBtn.innerHTML = "← Back to Bases";
+  backBtn.onclick = () => renderBases(false);
+  modalContent.appendChild(backBtn);
 }
 
 // PAGE 2: Minors
@@ -666,8 +701,7 @@ function renderMinors() {
   modalTitle.innerText = `Select Minor (v${selectedMajor}.x.x)`;
   modalContent.innerHTML = '';
   
-  // Filter for the selected major, then extract unique minors (e.g., ["1.2", "1.3"])
-  const filtered = clientVersions.filter(v => v.name.split('.')[0] === selectedMajor);
+  const filtered = clientVersions.filter(v => v.base === selectedBase && v.name.split('.')[0] === selectedMajor);
   const minors = [...new Set(filtered.map(v => v.name.split('.')[0] + '.' + v.name.split('.')[1]))];
   
   minors.forEach(minor => {
@@ -693,10 +727,9 @@ function renderPatches() {
   modalTitle.innerText = `Select Patch (v${selectedMinor}.x)`;
   modalContent.innerHTML = '';
   
-  // Filter for exact patches belonging to the selected minor
   const patches = clientVersions.filter(v => {
     const parts = v.name.split('.');
-    return `${parts[0]}.${parts[1]}` === selectedMinor;
+    return v.base === selectedBase && `${parts[0]}.${parts[1]}` === selectedMinor;
   });
   
   patches.forEach(v => {
@@ -708,7 +741,6 @@ function renderPatches() {
     if (v.hasJS) badges += `<span style="color:var(--green); margin-left:6px;">JS</span>`;
     if (v.hasWASM) badges += `<span style="color:#3399ff; margin-left:6px;">WASM</span>`;
     
-    // NEW BETA BADGE LOGIC
     if (v.isBeta) badges += `<span style="color:var(--red2); margin-left:6px; font-weight:bold;">BETA</span>`;
     
     btn.innerHTML = `<span>v${v.name}</span> <span style="font-size:10px;">${badges}</span>`;
@@ -723,30 +755,26 @@ function renderPatches() {
   modalContent.appendChild(backBtn);
 }
 
-// PAGE 4: Engine / Final Selection (UPDATED to support flow origins)
+// PAGE 4: Engine / Final Selection 
 function handleVersionSelect(v, isFromLatest = false) {
   
-  // 1. Check if they are picking an old version manually from the list
   if (!isFromLatest) {
-    const { latestStable, latestBeta } = getLatestVersions();
+    const { latestStable, latestBeta } = getLatestVersions(v.base);
     
-    // Check if the selected version is NOT the latest stable or latest beta
     const isLatest = (latestStable && v.name === latestStable.name) || 
                      (latestBeta && v.name === latestBeta.name);
                      
     if (!isLatest) {
-      // Trigger the alert asking them to upgrade
-      const wantsUpgrade = confirm(`You are about to launch an older version (v${v.name}).\n\nWould you like to upgrade to the newest version instead?`);
+      const wantsUpgrade = confirm(`You are about to launch an older version (v${v.name}).\n\nWould you like to upgrade to the newest ${v.base} version instead?`);
       
       if (wantsUpgrade) {
-        openLatestModal(); // Route them to the Play Latest screen
-        return;            // Stop the current launch process completely
+        selectedBase = v.base;
+        renderLatestForBase(); 
+        return;            
       }
     }
   }
 
-  // 2. Proceed with launching if they clicked "Cancel" or picked the latest version
-  // If it supports both, ask which one. Otherwise, just launch the supported one.
   if (v.hasJS && v.hasWASM) {
     renderEngines(v, isFromLatest);
   } else if (v.hasJS) {
@@ -781,26 +809,26 @@ function renderEngines(v, isFromLatest = false) {
   backBtn.innerHTML = "← Back";
   // Dynamically route the back button depending on how they got here
   backBtn.onclick = () => {
-    if (isFromLatest) openLatestModal();
+    if (isFromLatest) renderLatestForBase();
     else renderPatches();
   };
   modalContent.appendChild(backBtn);
 }
 
 /* ── Play Latest Logic ── */
-function getLatestVersions() {
-  // Sort versions accurately (e.g. 1.10.0 is newer than 1.2.0)
-  const sortedVersions = [...clientVersions].sort((a, b) => {
-    const pa = a.name.split('.').map(Number);
-    const pb = b.name.split('.').map(Number);
-    for(let i = 0; i < 3; i++) {
-      if ((pa[i] || 0) > (pb[i] || 0)) return 1;
-      if ((pa[i] || 0) < (pb[i] || 0)) return -1;
-    }
-    return 0;
-  });
+function getLatestVersions(base) {
+  const sortedVersions = [...clientVersions]
+    .filter(v => v.base === base)
+    .sort((a, b) => {
+      const pa = a.name.split('.').map(Number);
+      const pb = b.name.split('.').map(Number);
+      for(let i = 0; i < 3; i++) {
+        if ((pa[i] || 0) > (pb[i] || 0)) return 1;
+        if ((pa[i] || 0) < (pb[i] || 0)) return -1;
+      }
+      return 0;
+    });
 
-  // Find the highest beta and highest non-beta
   const latestStable = sortedVersions.filter(v => !v.isBeta).pop();
   const latestBeta = sortedVersions.filter(v => v.isBeta).pop();
 
@@ -809,9 +837,14 @@ function getLatestVersions() {
 
 function openLatestModal(e) {
   if (e) e.preventDefault();
-  const { latestStable, latestBeta } = getLatestVersions();
+  modalOverlay.classList.remove('hidden');
+  renderBases(true); // Flag to tell it to route to Play Latest afterwards
+}
+
+function renderLatestForBase() {
+  const { latestStable, latestBeta } = getLatestVersions(selectedBase);
   
-  modalTitle.innerText = "Select Release Channel";
+  modalTitle.innerText = `Select Channel (${selectedBase})`;
   modalContent.innerHTML = '';
   
   // Create Stable Button
@@ -837,7 +870,11 @@ function openLatestModal(e) {
     modalContent.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px;">No versions available.</div>';
   }
 
-  modalOverlay.classList.remove('hidden');
+  const backBtn = document.createElement('button');
+  backBtn.className = 'modal-btn back-btn';
+  backBtn.innerHTML = "← Back to Bases";
+  backBtn.onclick = () => renderBases(true);
+  modalContent.appendChild(backBtn);
 }
 
 
