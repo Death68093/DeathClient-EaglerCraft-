@@ -8,10 +8,7 @@
   - V1.12.2 IS HERE!! Play the beta now!
   - We have a ClientSpoofer, so be sure to turn it on BEFORE joining servers (you can go into a singleplayer world to do this)
 
-  - (Old announcement, but left here for context) School is out for me, meaning I wont be updated the client nearly as much, I will try to update it at least once every 3 days to a week, but I have less time to do so. Also I am currently away from home and will not return until Sunday, May 31. So please bear with me as I haven't left!
-
-- Regarding the above statement:
-I'm sorry for not even touching the client all summer. I'll. be honest.. I just didn't feel like spending my summer on this. I'll will continue on it as soon as school starts back though, I can promise that.
+  - Development is Back! I have begun working on the next versions of the client! Send me feedback and suggestions (and criticism) in the issues page and I'll see what I can do! Thanks for all the love you guys! I hope I can keep up with your demands!
 
 Any way **THANKS FOR 20 STARS!!** It really means a lot to me. It keeps me motivated to even do anything with this project.
 Please keep enjoying the client!
