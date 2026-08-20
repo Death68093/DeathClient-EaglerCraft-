@@ -4,6 +4,10 @@
 
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
+# EVERYONE PLEASE READ THIS!:
+  Please fork this repo and deploy it to github pages using your account so that servers can't block it!
+  Thank you!
+
 # Announcement:
   - V1.12.2 IS HERE!! Play the beta now!
   - We have a ClientSpoofer, so be sure to turn it on BEFORE joining servers (you can go into a singleplayer world to do this)
