@@ -9,10 +9,8 @@
   Thank you!
 
 # Announcement:
-  - V1.12.2 IS HERE!! Play the beta now!
-  - We have a ClientSpoofer, so be sure to turn it on BEFORE joining servers (you can go into a singleplayer world to do this)
-
-  - Development is Back! I have begun working on the next versions of the client! Send me feedback and suggestions (and criticism) in the issues page and I'll see what I can do! Thanks for all the love you guys! I hope I can keep up with your demands!
+  - So Development was slowed due to an issue where I couldn't see any blocks in the world. I have now fixed that though so development will now resume!
+      Thanks for understanding!
 
 Any way **THANKS FOR 20 STARS!!** It really means a lot to me. It keeps me motivated to even do anything with this project.
 Please keep enjoying the client!
