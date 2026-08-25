@@ -4,9 +4,10 @@
 
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
-# EVERYONE PLEASE READ THIS!:
-  Please fork this repo and deploy it to github pages using your account so that servers can't block it!
+# EVERYONE PLEASE READ THIS (AGAIN)!:
+  - Please fork this repo and deploy it to github pages using your account so that servers can't block it!
   Thank you!
+  - So I made a change to the LegitMode toggle. From now on, if you join a server with legitmode enabled then the server will be notified and you will be unable to disable legit mode until you leave the server. This is so it makes the client slighly less bannable, turning it into a "hybrid client" where you can decide whether you cheat or not.
 
 # Announcement:
   - So Development was slowed due to an issue where I couldn't see any blocks in the world. I have now fixed that though so development will now resume!
