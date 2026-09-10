@@ -4,466 +4,171 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DeathClient JS Plugin API Documentation</title>
-
 <style>
-  :root {
-    --bg:       #0d0d0d;
-    --bg2:      #141414;
-    --bg3:      #1a1a1a;
-    --bg4:      #202020;
-    --border:   #2a2a2a;
-    --red:      #cc0000;
-    --green:    #00cc66;
-    --blue:     #3399ff;
-    --yellow:   #ffcc00;
-    --purple:   #aa66ff;
-    --cyan:     #00cccc;
-    --orange:   #ff9933;
-    --text:     #e0e0e0;
-    --text2:    #bdbdbd;
-    --muted:    #777;
-    --code-bg:  #101010;
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.65;
-  }
-
-  .shell {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  nav {
-    width: 260px;
-    background: var(--bg2);
-    border-right: 1px solid var(--border);
-    padding: 20px;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 10;
-  }
-
-  nav h1 {
-    font-size: 19px;
-    margin-bottom: 4px;
-    color: var(--red);
-  }
-
-  nav .nav-version {
-    color: var(--muted);
-    font-size: 11px;
-    margin-bottom: 20px;
-  }
-
-  nav a {
-    display: block;
-    color: var(--muted);
-    text-decoration: none;
-    padding: 6px 0;
-    font-size: 13px;
-    transition: 0.2s;
-  }
-
-  nav a:hover,
-  nav a.active {
-    color: var(--text);
-  }
-
-  nav ul {
-    list-style: none;
-    margin-bottom: 15px;
-    padding-left: 10px;
-    border-left: 2px solid var(--border);
-  }
-
-  nav .section-title {
-    color: var(--text2);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin: 16px 0 6px;
-  }
-
-  main {
-    flex: 1;
-    margin-left: 260px;
-    padding: 40px;
-    max-width: 1050px;
-  }
-
-  h2 {
-    font-size: 25px;
-    margin: 46px 0 15px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 9px;
-    color: var(--blue);
-    scroll-margin-top: 20px;
-  }
-
-  h2:first-child {
-    margin-top: 0;
-  }
-
-  h3 {
-    font-size: 18px;
-    margin: 26px 0 10px;
-    color: var(--text);
-    scroll-margin-top: 20px;
-  }
-
-  h4 {
-    font-size: 15px;
-    margin: 20px 0 8px;
-    color: var(--text2);
-  }
-
-  p {
-    margin-bottom: 15px;
-  }
-
-  ul,
-  ol {
-    margin: 0 0 18px 22px;
-  }
-
-  li {
-    margin-bottom: 6px;
-  }
-
-  code {
-    background: var(--code-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Consolas', monospace;
-    font-size: 13px;
-    color: var(--cyan);
-  }
-
-  pre {
-    background: var(--bg3);
-    padding: 16px;
-    border-radius: 7px;
-    border: 1px solid var(--border);
-    overflow-x: auto;
-    margin-bottom: 20px;
-    line-height: 1.55;
-  }
-
-  pre code {
-    background: transparent;
-    padding: 0;
-    color: #cdd6f4;
-  }
-
-  .code-comment { color: #6a9955; }
-  .code-keyword { color: #569cd6; }
-  .code-string { color: #ce9178; }
-  .code-number { color: #b5cea8; }
-  .code-function { color: #dcdcaa; }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 22px;
-  }
-
-  th,
-  td {
-    text-align: left;
-    vertical-align: top;
-    padding: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  th {
-    color: var(--blue);
-    font-weight: 600;
-  }
-
-  td:first-child {
-    white-space: nowrap;
-  }
-
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 999px;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-
-  .badge-new {
-    background: rgba(0, 204, 102, 0.15);
-    color: var(--green);
-  }
-
-  .badge-core {
-    background: rgba(51, 153, 255, 0.15);
-    color: var(--blue);
-  }
-
-  .badge-advanced {
-    background: rgba(170, 102, 255, 0.15);
-    color: var(--purple);
-  }
-
-  .callout {
-    padding: 15px 16px;
-    margin-bottom: 20px;
-    border-radius: 0 6px 6px 0;
-  }
-
-  .callout-tip {
-    background: rgba(0, 204, 102, 0.09);
-    border-left: 4px solid var(--green);
-  }
-
-  .callout-warning {
-    background: rgba(255, 204, 0, 0.09);
-    border-left: 4px solid var(--yellow);
-  }
-
-  .callout-info {
-    background: rgba(51, 153, 255, 0.09);
-    border-left: 4px solid var(--blue);
-  }
-
-  .callout-danger {
-    background: rgba(204, 0, 0, 0.10);
-    border-left: 4px solid var(--red);
-  }
-
-  .hero {
-    background:
-      linear-gradient(
-        135deg,
-        rgba(204, 0, 0, 0.13),
-        rgba(51, 153, 255, 0.05)
-      );
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 22px;
-    margin-bottom: 25px;
-  }
-
-  .hero h3 {
-    margin-top: 0;
-  }
-
-  .step {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 13px;
-    align-items: flex-start;
-  }
-
-  .step-number {
-    width: 26px;
-    height: 26px;
-    flex: 0 0 26px;
-    border-radius: 50%;
-    background: var(--red);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 12px;
-  }
-
-  .api-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-
-  .api-card h4 {
-    margin-top: 0;
-    color: var(--cyan);
-  }
-
-  .mini-code {
-    background: var(--bg4);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    margin: 9px 0 12px;
-    font-family: Consolas, monospace;
-    font-size: 13px;
-    overflow-x: auto;
-    white-space: pre;
-  }
-
-  .toc-note {
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: -6px;
-    margin-bottom: 18px;
-  }
-
-  .two-col {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-
-  .two-col > div {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 14px;
-  }
-
-  .two-col h4 {
-    margin-top: 0;
-  }
-
-  .muted {
-    color: var(--muted);
-  }
-
-  .good {
-    color: var(--green);
-  }
-
-  .bad {
-    color: #ff6666;
-  }
-
-  .accent {
-    color: var(--cyan);
-  }
-
-  .footer {
-    color: var(--muted);
-    font-size: 12px;
-    border-top: 1px solid var(--border);
-    padding-top: 18px;
-    margin-top: 50px;
-  }
-
-  @media (max-width: 850px) {
-    nav {
-      display: none;
-    }
-
-    main {
-      margin-left: 0;
-      padding: 22px;
-    }
-
-    .two-col {
-      grid-template-columns: 1fr;
-    }
-  }
+:root{
+  --bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#202020;
+  --border:#2a2a2a;--red:#cc0000;--green:#00cc66;--blue:#3399ff;
+  --yellow:#ffcc00;--purple:#aa66ff;--cyan:#00cccc;--orange:#ff9933;
+  --text:#e0e0e0;--text2:#bdbdbd;--muted:#777;--code-bg:#101010;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Segoe UI',system-ui,sans-serif;
+  font-size:15px;line-height:1.65;
+}
+.shell{display:flex;min-height:100vh}
+nav{
+  width:270px;background:var(--bg2);border-right:1px solid var(--border);
+  padding:20px;position:fixed;height:100vh;overflow-y:auto;z-index:10;
+}
+nav h1{font-size:19px;margin-bottom:4px;color:var(--red)}
+nav .nav-version{color:var(--muted);font-size:11px;margin-bottom:20px}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:6px 0;font-size:13px}
+nav a:hover,nav a.active{color:var(--text)}
+nav ul{list-style:none;margin-bottom:15px;padding-left:10px;border-left:2px solid var(--border)}
+nav .section-title{
+  color:var(--text2);font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;margin:16px 0 6px;
+}
+main{flex:1;margin-left:270px;padding:40px;max-width:1120px}
+h2{
+  font-size:25px;margin:46px 0 15px;border-bottom:1px solid var(--border);
+  padding-bottom:9px;color:var(--blue);scroll-margin-top:20px;
+}
+h2:first-child{margin-top:0}
+h3{font-size:18px;margin:26px 0 10px;color:var(--text);scroll-margin-top:20px}
+h4{font-size:15px;margin:20px 0 8px;color:var(--text2)}
+p{margin-bottom:15px}
+ul,ol{margin:0 0 18px 22px}
+li{margin-bottom:6px}
+code{
+  background:var(--code-bg);padding:2px 6px;border-radius:4px;
+  font-family:Consolas,monospace;font-size:13px;color:var(--cyan);
+}
+pre{
+  background:var(--bg3);padding:16px;border-radius:7px;
+  border:1px solid var(--border);overflow-x:auto;margin-bottom:20px;
+  line-height:1.55;
+}
+pre code{background:transparent;padding:0;color:#cdd6f4}
+table{width:100%;border-collapse:collapse;margin-bottom:22px}
+th,td{text-align:left;vertical-align:top;padding:10px;border-bottom:1px solid var(--border)}
+th{color:var(--blue);font-weight:600}
+td:first-child{white-space:nowrap}
+.badge{
+  display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;
+  border-radius:999px;margin-left:6px;vertical-align:middle;
+}
+.badge-core{background:rgba(51,153,255,.15);color:var(--blue)}
+.badge-new{background:rgba(0,204,102,.15);color:var(--green)}
+.badge-advanced{background:rgba(170,102,255,.15);color:var(--purple)}
+.badge-warn{background:rgba(255,204,0,.15);color:var(--yellow)}
+.callout{padding:15px 16px;margin-bottom:20px;border-radius:0 6px 6px 0}
+.callout-tip{background:rgba(0,204,102,.09);border-left:4px solid var(--green)}
+.callout-warning{background:rgba(255,204,0,.09);border-left:4px solid var(--yellow)}
+.callout-info{background:rgba(51,153,255,.09);border-left:4px solid var(--blue)}
+.callout-danger{background:rgba(204,0,0,.10);border-left:4px solid var(--red)}
+.hero{
+  background:linear-gradient(135deg,rgba(204,0,0,.13),rgba(51,153,255,.05));
+  border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:25px;
+}
+.hero h3{margin-top:0}
+.two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-bottom:20px}
+.two-col>div{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:14px}
+.two-col h4{margin-top:0}
+.muted{color:var(--muted)}
+.good{color:var(--green)}
+.bad{color:#ff6666}
+.accent{color:var(--cyan)}
+.api-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:15px}
+.api-card h4{margin-top:0;color:var(--cyan)}
+.mini-code{
+  background:var(--bg4);border:1px solid var(--border);border-radius:6px;
+  padding:10px 12px;margin:9px 0 12px;font:13px Consolas,monospace;
+  overflow-x:auto;white-space:pre;
+}
+.footer{color:var(--muted);font-size:12px;border-top:1px solid var(--border);padding-top:18px;margin-top:50px}
+@media(max-width:850px){
+  nav{display:none} main{margin-left:0;padding:22px}
+  .two-col{grid-template-columns:1fr}
+}
 </style>
 </head>
-
 <body>
-
 <div class="shell">
+<nav>
+  <h1>DeathClient JS</h1>
+  <div class="nav-version">Plugin API 3.0 · EaglerCraft 1.8</div>
 
-  <nav>
+  <div class="section-title">Learn</div>
+  <a href="#getting-started">Getting Started</a>
+  <a href="#javascript-basics">JavaScript Basics</a>
+  <a href="#plugin-structure">Plugin Structure</a>
 
-    <h1>DeathClient JS</h1>
-    <div class="nav-version">
-      Plugin API 2.0 · EaglerCraft 1.8
-    </div>
+  <div class="section-title">Build</div>
+  <a href="#mods">Mods</a>
+  <a href="#settings">Settings</a>
+  <a href="#commands">Commands</a>
+  <a href="#callbacks">Callbacks</a>
+  <a href="#hud">HUD Mods</a>
 
-    <div class="section-title">Learn</div>
+  <div class="section-title">API</div>
+  <a href="#chat">Chat</a>
+  <a href="#mod-control">Mod Control</a>
+  <a href="#player-world">Player & World</a>
+  <a href="#events">Events</a>
+  <a href="#storage">Storage</a>
+  <a href="#resources">Resources</a>
+  <a href="#timers">Timers</a>
+  <a href="#audio">Audio & Titles</a>
+  <a href="#debug">Debug</a>
 
-    <a href="#getting-started">Getting Started</a>
-    <a href="#javascript-basics">JavaScript Basics</a>
-    <a href="#plugin-structure">Plugin Structure</a>
-    <a href="#beginner-recipes">Beginner Recipes</a>
+  <div class="section-title">Advanced</div>
+  <a href="#models">Runtime Models</a>
+  <a href="#entities">Runtime Entities</a>
+  <a href="#textures">Runtime Textures</a>
+  <a href="#items">Runtime Items</a>
 
-    <div class="section-title">Build</div>
+  <div class="section-title">Examples</div>
+  <a href="#examples">Working Examples</a>
+  <a href="#troubleshooting">Troubleshooting</a>
+</nav>
 
-    <a href="#mod-registration">Mod Registration</a>
-    <a href="#settings">Settings</a>
-    <a href="#commands">Commands</a>
-    <a href="#callbacks">Callbacks</a>
-    <a href="#hud-mods">HUD Mods</a>
+<main>
 
-    <div class="section-title">API</div>
+<h2 id="getting-started">Getting Started</h2>
 
-    <a href="#bridge-api">Bridge API</a>
-    <a href="#game-state">Player & World</a>
-    <a href="#events">Events</a>
-    <a href="#storage">Storage</a>
-    <a href="#resources">Resources</a>
-    <a href="#timers">Timers</a>
+<div class="hero">
+  <h3>What is a DeathClient JavaScript plugin?</h3>
+  <p>
+    A DeathClient plugin is a <code>.js</code> file executed by DeathClient's
+    built-in JavaScript runtime. Plugins can register mods, settings, local
+    commands, HUD modules, event handlers, runtime models, client-side entities,
+    runtime items, textures, storage, timers, sounds, and player/world actions.
+  </p>
+  <p>
+    The JavaScript API is exposed as <code>window.DeathClient</code>.
+    The current bridge identifies itself as JavaScript bridge version
+    <code>1.5.0</code> and API version <code>3.0.0</code>.
+  </p>
+</div>
 
-    <div class="section-title">Examples</div>
+<div class="callout callout-info">
+  <strong>Important:</strong> This reference documents the API exposed by the current
+  DeathClient bridge. It intentionally does not document older methods that are not
+  present in the current bridge, such as <code>dc.getAllMods()</code>,
+  <code>dc.pickResource()</code>, remote resource fetch helpers, or
+  <code>dc.storage.clear()</code>.
+</div>
 
-    <a href="#examples">Plugin Examples</a>
-    <a href="#advanced-patterns">Advanced Patterns</a>
-    <a href="#troubleshooting">Troubleshooting</a>
-
-  </nav>
-
-  <main>
-
-    <!-- ========================================================= -->
-    <!-- GETTING STARTED -->
-    <!-- ========================================================= -->
-
-    <h2 id="getting-started">Getting Started</h2>
-
-    <div class="hero">
-      <h3>What is a DeathClient JavaScript plugin?</h3>
-
-      <p>
-        A DeathClient plugin is simply a <code>.js</code> file that runs inside
-        DeathClient's built-in JavaScript environment.
-      </p>
-
-      <p>
-        You do not need to know Java, TeaVM, Minecraft modding, or OpenGL to
-        make a basic plugin. You can start by copying one of the examples below
-        and changing the names, messages, settings, and actions.
-      </p>
-    </div>
-
-    <div class="callout callout-tip">
-      <strong>Built-in editor:</strong>
-      DeathClient includes a VS Code-style JavaScript editor. Open the
-      JavaScript Plugins menu, create or edit a plugin, then save it.
-      The editor supports syntax highlighting, themes, file loading,
-      and hot-loading.
-    </div>
-
-    <h3>Your first plugin</h3>
-
-    <p>
-      Copy this entire script into a new JavaScript plugin:
-    </p>
-
-    <pre><code>const dc = window.DeathClient;
+<h3>Your first plugin</h3>
+<pre><code>const dc = window.DeathClient;
 
 dc.createMod({
     name: "Hello World",
+    displayName: "Hello World",
     description: "My first DeathClient plugin",
     category: "PLAYER",
     isCheat: false,
@@ -473,192 +178,79 @@ dc.createMod({
     },
 
     onUpdate: function() {
-        // This runs every game tick.
+        // Called by DeathClient's normal mod update path.
     }
 });</code></pre>
 
-    <p>
-      The important parts are:
-    </p>
+<h3>Basic plugin workflow</h3>
+<ol>
+  <li>Get the API with <code>const dc = window.DeathClient;</code>.</li>
+  <li>Register one or more mods with <code>dc.createMod()</code>.</li>
+  <li>Add settings, callbacks, commands, or other APIs as needed.</li>
+  <li>Use client-side APIs such as <code>dc.chat()</code>, <code>dc.player</code>,
+      <code>dc.storage</code>, and the advanced runtime systems.</li>
+</ol>
 
-    <div class="step">
-      <div class="step-number">1</div>
-      <div>
-        <strong>Get the API.</strong><br>
-        <code>const dc = window.DeathClient;</code>
-      </div>
-    </div>
+<h2 id="javascript-basics">JavaScript Basics</h2>
 
-    <div class="step">
-      <div class="step-number">2</div>
-      <div>
-        <strong>Create a mod.</strong><br>
-        <code>dc.createMod({...})</code>
-      </div>
-    </div>
+<p>Only normal JavaScript is required for the core API.</p>
 
-    <div class="step">
-      <div class="step-number">3</div>
-      <div>
-        <strong>Give it behavior.</strong><br>
-        Use callbacks such as <code>onEnable</code>, <code>onUpdate</code>,
-        and <code>onChat</code>.
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-number">4</div>
-      <div>
-        <strong>Use the API.</strong><br>
-        For example:
-        <code>dc.chat()</code>,
-        <code>dc.sendCommand()</code>,
-        <code>dc.player.jump()</code>,
-        and <code>dc.storage.set()</code>.
-      </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- JAVASCRIPT BASICS -->
-    <!-- ========================================================= -->
-
-    <h2 id="javascript-basics">JavaScript Basics</h2>
-
-    <p>
-      You only need a small amount of JavaScript to make useful DeathClient
-      plugins. These are the fundamentals you will use most often.
-    </p>
-
-    <h3>Variables</h3>
-
-    <p>
-      A variable stores information.
-    </p>
-
-    <pre><code>let price = 10;
+<h3>Variables</h3>
+<pre><code>let coins = 10;
 let playerName = "Steve";
 let enabled = true;</code></pre>
 
-    <table>
-      <tr>
-        <th>Example</th>
-        <th>What it means</th>
-      </tr>
-      <tr>
-        <td><code>let x = 10;</code></td>
-        <td>Create a variable named <code>x</code> containing <code>10</code>.</td>
-      </tr>
-      <tr>
-        <td><code>let name = "Steve";</code></td>
-        <td>Create a text value.</td>
-      </tr>
-      <tr>
-        <td><code>let enabled = true;</code></td>
-        <td>Create a true/false value.</td>
-      </tr>
-    </table>
-
-    <h3>Changing variables</h3>
-
-    <pre><code>let price = 10;
-
-price = 20;
-price += 5;
-price -= 2;</code></pre>
-
-    <p>
-      After these operations, <code>price</code> is <code>23</code>.
-    </p>
-
-    <h3>Conditions</h3>
-
-    <pre><code>if (dc.player.health &lt; 5) {
+<h3>Conditions</h3>
+<pre><code>if (dc.player.health &lt; 5) {
     dc.chat("§cLow health!");
 }</code></pre>
 
-    <h3>Functions</h3>
-
-    <pre><code>function sayHello(name) {
+<h3>Functions</h3>
+<pre><code>function sayHello(name) {
     dc.chat("Hello " + name);
 }
 
 sayHello("Steve");</code></pre>
 
-    <h3>Repeating logic</h3>
-
-    <p>
-      A DeathClient <code>onUpdate</code> callback runs approximately once
-      per client tick.
-    </p>
-
-    <pre><code>onUpdate: function() {
-    if (dc.player.onGround) {
-        dc.player.jump();
-    }
+<h3>Loops</h3>
+<pre><code>for (let i = 0; i &lt; 5; i++) {
+    dc.chat("Count: " + i);
 }</code></pre>
 
-    <h3>Useful operators</h3>
+<h3>Objects</h3>
+<pre><code>const config = {
+    damage: 10,
+    enabled: true,
+    mode: "normal"
+};
 
-    <table>
-      <tr>
-        <th>Operator</th>
-        <th>Example</th>
-        <th>Meaning</th>
-      </tr>
-      <tr>
-        <td><code>===</code></td>
-        <td><code>x === 10</code></td>
-        <td>Exactly equal.</td>
-      </tr>
-      <tr>
-        <td><code>!==</code></td>
-        <td><code>x !== 10</code></td>
-        <td>Not equal.</td>
-      </tr>
-      <tr>
-        <td><code>&gt;</code></td>
-        <td><code>x &gt; 10</code></td>
-        <td>Greater than.</td>
-      </tr>
-      <tr>
-        <td><code>&lt;</code></td>
-        <td><code>x &lt; 10</code></td>
-        <td>Less than.</td>
-      </tr>
-      <tr>
-        <td><code>&amp;&amp;</code></td>
-        <td><code>a &amp;&amp; b</code></td>
-        <td>Both conditions must be true.</td>
-      </tr>
-      <tr>
-        <td><code>||</code></td>
-        <td><code>a || b</code></td>
-        <td>At least one condition is true.</td>
-      </tr>
-      <tr>
-        <td><code>!</code></td>
-        <td><code>!enabled</code></td>
-        <td>Invert true/false.</td>
-      </tr>
-    </table>
+dc.log(config.mode);</code></pre>
 
-    <!-- ========================================================= -->
-    <!-- PLUGIN STRUCTURE -->
-    <!-- ========================================================= -->
+<h3>Useful operators</h3>
+<table>
+<tr><th>Operator</th><th>Example</th><th>Meaning</th></tr>
+<tr><td><code>===</code></td><td><code>x === 10</code></td><td>Exactly equal.</td></tr>
+<tr><td><code>!==</code></td><td><code>x !== 10</code></td><td>Not equal.</td></tr>
+<tr><td><code>&gt;</code></td><td><code>x &gt; 10</code></td><td>Greater than.</td></tr>
+<tr><td><code>&lt;</code></td><td><code>x &lt; 10</code></td><td>Less than.</td></tr>
+<tr><td><code>&amp;&amp;</code></td><td><code>a &amp;&amp; b</code></td><td>Both conditions must be true.</td></tr>
+<tr><td><code>||</code></td><td><code>a || b</code></td><td>At least one condition is true.</td></tr>
+<tr><td><code>!</code></td><td><code>!enabled</code></td><td>Invert a boolean.</td></tr>
+</table>
 
-    <h2 id="plugin-structure">Plugin Structure</h2>
+<h2 id="plugin-structure">Plugin Structure</h2>
 
-    <p>
-      You can make one plugin file contain multiple mods, HUDs, commands,
-      event handlers, settings, timers, and storage systems.
-    </p>
+<p>
+A single plugin file can contain multiple mods, HUDs, commands, global events,
+settings, runtime assets, and helper functions.
+</p>
 
-    <p>A common structure is:</p>
+<pre><code>const dc = window.DeathClient;
 
-    <pre><code>const dc = window.DeathClient;
-
-// Settings / constants
-const PRICE = 10;
+// Shared state
+const state = {
+    count: 0
+};
 
 // Main mod
 dc.createMod({
@@ -666,424 +258,185 @@ dc.createMod({
     description: "Example plugin",
     category: "PLAYER",
     settings: [],
-    onEnable: function() {},
-    onDisable: function() {},
+
+    onEnable: function(settings) {},
+    onDisable: function(settings) {},
     onUpdate: function(settings) {},
     onChat: function(message) {}
 });
 
-// Global events
-dc.on("chat_receive", function(data) {
-});
-
-// Custom command
+// Local command
 dc.createCommand({
-    command: "example",
+    name: "example",
     prefix: ".",
-    execute: function(args) {
-    }
+    execute: function(args) {}
 });</code></pre>
 
-    <div class="callout callout-info">
-      <strong>Tip:</strong>
-      You do not have to use every system. Start with a mod and an
-      <code>onUpdate</code> callback, then add APIs as you need them.
-    </div>
+<div class="callout callout-warning">
+  The current command API uses <code>name</code>, not <code>command</code>,
+  when passing the object to <code>dc.createCommand()</code>.
+</div>
 
-    <!-- ========================================================= -->
-    <!-- BEGINNER RECIPES -->
-    <!-- ========================================================= -->
+<h2 id="mods">Mod Registration <span class="badge badge-core">CORE</span></h2>
 
-    <h2 id="beginner-recipes">Beginner Recipes</h2>
+<h3><code>dc.createMod(config)</code></h3>
 
-    <p>
-      These are copy-and-modify examples for people who do not know much
-      JavaScript yet.
-    </p>
+<table>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>name</code></td><td>String</td><td>Required internal mod name.</td></tr>
+<tr><td><code>displayName</code></td><td>String</td><td>Optional GUI display name. Defaults to <code>name</code>.</td></tr>
+<tr><td><code>description</code></td><td>String</td><td>Description shown for the mod.</td></tr>
+<tr><td><code>category</code></td><td>String</td><td>Common categories include PLAYER, MOVEMENT, COMBAT, RENDER, WORLD, HUD.</td></tr>
+<tr><td><code>isCheat</code></td><td>Boolean</td><td>Marks the module as a cheat in the mod system.</td></tr>
+<tr><td><code>settings</code></td><td>Array</td><td>Settings created with <code>dc.createSetting()</code>.</td></tr>
+<tr><td><code>onEnable</code></td><td>Function</td><td>Runs when the Java-side module is enabled.</td></tr>
+<tr><td><code>onDisable</code></td><td>Function</td><td>Runs when the Java-side module is disabled.</td></tr>
+<tr><td><code>onUpdate</code></td><td>Function</td><td>Called from the Java mod update path.</td></tr>
+<tr><td><code>onRender2D</code></td><td>Function</td><td>Called from the 2D rendering path when wired by the client.</td></tr>
+<tr><td><code>onChat</code></td><td>Function</td><td>Receives chat text delivered to the JS mod.</td></tr>
+</table>
 
-    <h3>Say something when the mod is enabled</h3>
-
-    <pre><code>dc.createMod({
+<h3>Example</h3>
+<pre><code>dc.createMod({
     name: "Welcome",
-    description: "Sends a message when enabled",
+    displayName: "Welcome",
+    description: "Shows a message when enabled.",
     category: "PLAYER",
+    isCheat: false,
 
     onEnable: function() {
         dc.chat("§aWelcome!");
+    },
+
+    onDisable: function() {
+        dc.chat("§cGoodbye!");
     }
 });</code></pre>
 
-    <h3>Send a server command</h3>
+<h2 id="settings">Settings <span class="badge badge-core">CORE</span></h2>
 
-    <pre><code>dc.sendCommand("spawn");</code></pre>
+<p>
+Settings are serialized into the mod registration payload and synchronized into
+the mod's <code>settingsCache</code>.
+</p>
 
-    <p>
-      You can also write:
-    </p>
-
-    <pre><code>dc.sendCommand("/spawn");</code></pre>
-
-    <p>
-      Both become a slash command.
-    </p>
-
-    <h3>Display a title</h3>
-
-    <pre><code>dc.showTitle(
-    "§cWARNING",
-    "§7Something happened!"
-);</code></pre>
-
-    <h3>Play a sound</h3>
-
-    <pre><code>dc.playSound(
-    "random.orb",
-    1.0,
-    1.0
-);</code></pre>
-
-    <h3>React to chat</h3>
-
-    <pre><code>dc.on("chat_receive", function(data) {
-
-    if (data.message.indexOf("joined") !== -1) {
-        dc.chat("§aSomeone joined!");
-    }
-
-});</code></pre>
-
-    <h3>Automatically jump</h3>
-
-    <pre><code>dc.createMod({
-    name: "Auto Jump",
-    description: "Automatically jumps while enabled",
-    category: "MOVEMENT",
-    isCheat: true,
-
-    onUpdate: function() {
-        if (dc.player.onGround) {
-            dc.player.jump();
-        }
-    }
-});</code></pre>
-
-    <h3>Run something every second</h3>
-
-    <pre><code>let timer = 0;
-
-dc.createMod({
-    name: "Timer Example",
-
-    onUpdate: function() {
-
-        timer++;
-
-        if (timer &gt;= 20) {
-            timer = 0;
-
-            dc.chat("§eOne second passed.");
-        }
-    }
-});</code></pre>
-
-    <p>
-      There are 20 normal Minecraft client ticks per second, so this is a
-      useful simple timer technique.
-    </p>
-
-    <!-- ========================================================= -->
-    <!-- MOD REGISTRATION -->
-    <!-- ========================================================= -->
-
-    <h2 id="mod-registration">Mod Registration</h2>
-
-    <p>
-      Register a normal module with <code>dc.createMod(config)</code>.
-    </p>
-
-    <table>
-      <tr>
-        <th>Property</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>name</code></td>
-        <td>String</td>
-        <td><strong>Required.</strong> Exact module name.</td>
-      </tr>
-      <tr>
-        <td><code>displayName</code></td>
-        <td>String</td>
-        <td>Optional GUI display name. Defaults to <code>name</code>.</td>
-      </tr>
-      <tr>
-        <td><code>description</code></td>
-        <td>String</td>
-        <td>Description shown in the ClickGUI.</td>
-      </tr>
-      <tr>
-        <td><code>category</code></td>
-        <td>String</td>
-        <td>
-          <code>MOVEMENT</code>, <code>COMBAT</code>, <code>RENDER</code>,
-          <code>WORLD</code>, <code>PLAYER</code>, or <code>HUD</code>.
-        </td>
-      </tr>
-      <tr>
-        <td><code>isCheat</code></td>
-        <td>Boolean</td>
-        <td>
-          Marks the module as a cheat. Use <code>false</code> for normal
-          utility features.
-        </td>
-      </tr>
-      <tr>
-        <td><code>settings</code></td>
-        <td>Array</td>
-        <td>Optional settings made with <code>dc.createSetting()</code>.</td>
-      </tr>
-      <tr>
-        <td><code>onEnable</code></td>
-        <td>Function</td>
-        <td>Runs when the module is enabled.</td>
-      </tr>
-      <tr>
-        <td><code>onDisable</code></td>
-        <td>Function</td>
-        <td>Runs when the module is disabled.</td>
-      </tr>
-      <tr>
-        <td><code>onUpdate</code></td>
-        <td>Function</td>
-        <td>Runs every client tick while the module exists.</td>
-      </tr>
-      <tr>
-        <td><code>onRender2D</code></td>
-        <td>Function</td>
-        <td>Runs every frame for 2D rendering integrations.</td>
-      </tr>
-      <tr>
-        <td><code>onChat</code></td>
-        <td>Function</td>
-        <td>Runs when incoming server chat is delivered to the JS system.</td>
-      </tr>
-    </table>
-
-    <!-- ========================================================= -->
-    <!-- SETTINGS -->
-    <!-- ========================================================= -->
-
-    <h2 id="settings">Settings API</h2>
-
-    <p>
-      Settings automatically appear in DeathClient's GUI.
-      The current values are passed to callbacks through
-      <code>settingsCache</code>.
-    </p>
-
-    <h3>Toggle / Boolean</h3>
-
-    <pre><code>dc.createSetting(
+<h3>Toggle / Boolean</h3>
+<pre><code>const enabled = dc.createSetting(
     "Toggle",
     "Enabled",
     true
-)</code></pre>
+);</code></pre>
 
-    <h3>Slider / Number</h3>
-
-    <pre><code>dc.createSetting(
+<h3>Slider / Number</h3>
+<pre><code>const delay = dc.createSetting(
     "Slider",
     "Delay",
     50,
     0,
     1000,
     1
-)</code></pre>
+);</code></pre>
 
-    <p>
-      Parameters:
-      type, name, default, minimum, maximum, step.
-    </p>
-
-    <h3>Mode / Dropdown</h3>
-
-    <pre><code>dc.createSetting(
+<h3>Mode</h3>
+<pre><code>const mode = dc.createSetting(
     "Mode",
-    "Style",
+    "Mode",
     "Normal",
-    [
-        "Normal",
-        "Aggressive",
-        "Passive"
-    ]
-)</code></pre>
+    ["Normal", "Aggressive", "Passive"]
+);</code></pre>
 
-    <h3>String / Text</h3>
-
-    <pre><code>dc.createSetting(
+<h3>String</h3>
+<pre><code>const message = dc.createSetting(
     "String",
     "Message",
-    "Hello World!"
-)</code></pre>
+    "Hello!"
+);</code></pre>
 
-    <h3>Reading settings</h3>
-
-    <pre><code>onUpdate: function(settings) {
-
-    if (settings["Enabled"].value) {
-
-        let delay =
-            settings["Delay"].value;
-
-        let style =
-            settings["Style"].value;
-
-        let message =
-            settings["Message"].value;
-
-    }
-}</code></pre>
-
-    <h3>Complete settings example</h3>
-
-    <pre><code>dc.createMod({
-
+<h3>Complete example</h3>
+<pre><code>dc.createMod({
     name: "Message Mod",
 
     settings: [
-        dc.createSetting(
-            "Toggle",
-            "Spam",
-            false
-        ),
-
-        dc.createSetting(
-            "Slider",
-            "Delay",
-            1000,
-            100,
-            5000,
-            100
-        ),
-
-        dc.createSetting(
-            "Mode",
-            "Style",
+        dc.createSetting("Toggle", "Spam", false),
+        dc.createSetting("Slider", "Delay", 1000, 100, 5000, 100),
+        dc.createSetting("Mode", "Style",
             "Friendly",
             ["Friendly", "Funny", "Serious"]
         ),
-
-        dc.createSetting(
-            "String",
-            "Message",
-            "Hello!"
-        )
+        dc.createSetting("String", "Message", "Hello!")
     ],
 
     onUpdate: function(settings) {
-
         if (!settings["Spam"].value) {
             return;
         }
 
-        let delay =
-            settings["Delay"].value;
-
-        let style =
-            settings["Style"].value;
-
-        let message =
-            settings["Message"].value;
+        const delay = settings["Delay"].value;
+        const style = settings["Style"].value;
+        const message = settings["Message"].value;
 
         // Plugin logic here.
     }
 });</code></pre>
 
-    <!-- ========================================================= -->
-    <!-- COMMANDS -->
-    <!-- ========================================================= -->
+<h2 id="commands">Commands <span class="badge badge-new">CURRENT</span></h2>
 
-    <h2 id="commands">Commands API</h2>
+<p>
+DeathClient commands are <strong>local client commands</strong>. They are intercepted
+before ordinary chat handling when the typed message begins with the command prefix.
+</p>
 
-    <p>
-      Register a local JavaScript command with
-      <code>dc.createCommand()</code>.
-      These commands are handled by DeathClient instead of being sent to the
-      server as normal chat.
-    </p>
+<h3><code>dc.registerCommand(name, prefix, execute)</code></h3>
 
-    <pre><code>dc.createCommand({
+<pre><code>dc.registerCommand(
+    "hello",
+    ".",
+    function(args) {
+        dc.chat("§aHello!");
+        dc.chat("Arguments: §f" + args);
+    }
+);</code></pre>
 
-    command: "hello",
+<h3><code>dc.createCommand(config)</code></h3>
 
+<p>This is the object-style equivalent.</p>
+
+<pre><code>dc.createCommand({
+    name: "hello",
     prefix: ".",
-
-    description: "Says hello",
-
     execute: function(args) {
-
-        dc.chat(
-            "§aHello!"
-        );
-
-        dc.chat(
-            "Arguments: " + args
-        );
+        dc.chat("§aHello " + (args || "world"));
     }
 });</code></pre>
 
-    <p>
-      Typing:
-    </p>
+<p>Typing:</p>
+<pre><code>.hello test something</code></pre>
 
-    <pre><code>.hello test something</code></pre>
+<p>passes this string to the callback:</p>
+<pre><code>args === "test something"</code></pre>
 
-    <p>
-      gives:
-    </p>
-
-    <pre><code>args = "test something"</code></pre>
-
-    <h3>Command with arguments</h3>
-
-    <pre><code>dc.createCommand({
-
-    command: "say",
-
+<h3>Command with multiple arguments</h3>
+<pre><code>dc.createCommand({
+    name: "teleport",
     prefix: ".",
-
     execute: function(args) {
+        const parts = String(args || "").trim().split(/\s+/);
 
-        if (!args || !args.trim()) {
-            dc.chat("§cUsage: .say &lt;message&gt;");
+        if (parts.length &lt; 3) {
+            dc.chat("§cUsage: .teleport &lt;x&gt; &lt;y&gt; &lt;z&gt;");
             return;
         }
 
-        dc.chat(
-            "§aYou said: §f" + args
-        );
-    }
-});</code></pre>
+        const x = Number(parts[0]);
+        const y = Number(parts[1]);
+        const z = Number(parts[2]);
 
-    <h3>Command with multiple arguments</h3>
-
-    <pre><code>dc.createCommand({
-
-    command: "teleport",
-
-    prefix: ".",
-
-    execute: function(args) {
-
-        let parts =
-            String(args)
-                .trim()
-                .split(/\s+/);
-
-        let x = Number(parts[0]);
-        let y = Number(parts[1]);
-        let z = Number(parts[2]);
+        if (!Number.isFinite(x) ||
+            !Number.isFinite(y) ||
+            !Number.isFinite(z)) {
+            dc.chat("§cInvalid coordinates.");
+            return;
+        }
 
         dc.player.x = x;
         dc.player.y = y;
@@ -1091,779 +444,632 @@ dc.createMod({
     }
 });</code></pre>
 
-    <!-- ========================================================= -->
-    <!-- CALLBACKS -->
-    <!-- ========================================================= -->
+<h3>Unregistering the JavaScript callback</h3>
+<pre><code>dc.unregisterCommand("hello");</code></pre>
 
-    <h2 id="callbacks">Mod Callbacks</h2>
+<div class="callout callout-info">
+  Local command interception is part of the client-side command system. A registered
+  command uses its prefix exactly as provided, so a command registered with
+  <code>"."</code> responds to <code>.hello</code>.
+</div>
 
-    <table>
-      <tr>
-        <th>Callback</th>
-        <th>When it runs</th>
-      </tr>
-      <tr>
-        <td><code>onEnable(settings)</code></td>
-        <td>When the module is enabled.</td>
-      </tr>
-      <tr>
-        <td><code>onDisable(settings)</code></td>
-        <td>When the module is disabled.</td>
-      </tr>
-      <tr>
-        <td><code>onUpdate(settings)</code></td>
-        <td>Every client tick.</td>
-      </tr>
-      <tr>
-        <td><code>onRender2D(settings)</code></td>
-        <td>Every render frame.</td>
-      </tr>
-      <tr>
-        <td><code>onChat(message)</code></td>
-        <td>When a chat message is delivered to the module.</td>
-      </tr>
-    </table>
+<h2 id="callbacks">Callbacks <span class="badge badge-core">CORE</span></h2>
 
-    <div class="callout callout-warning">
-      <strong>Performance:</strong>
-      <code>onUpdate</code> can run many times over the lifetime of a plugin.
-      Avoid expensive loops, huge allocations, repeated downloads, or large
-      JSON operations every tick.
-    </div>
+<table>
+<tr><th>Callback</th><th>Purpose</th></tr>
+<tr><td><code>onEnable(settings)</code></td><td>Runs when the mod is enabled.</td></tr>
+<tr><td><code>onDisable(settings)</code></td><td>Runs when the mod is disabled.</td></tr>
+<tr><td><code>onUpdate(settings)</code></td><td>Runs from the normal mod update path.</td></tr>
+<tr><td><code>onRender2D(settings)</code></td><td>Runs from the 2D render path when used by the client.</td></tr>
+<tr><td><code>onChat(message)</code></td><td>Receives incoming chat text.</td></tr>
+</table>
 
-    <!-- ========================================================= -->
-    <!-- HUD -->
-    <!-- ========================================================= -->
+<div class="callout callout-warning">
+  Do not perform expensive work every tick. Avoid large allocations, repeated JSON
+  parsing, huge entity loops, or unnecessary resource operations in update callbacks.
+</div>
 
-    <h2 id="hud-mods">HUD Mods</h2>
+<h2 id="hud">HUD Mods <span class="badge badge-core">CORE</span></h2>
 
-    <p>
-      Use <code>dc.createHudMod(config)</code> for a module that should have
-      a draggable and scalable HUD position.
-    </p>
+<h3><code>dc.createHudMod(config)</code></h3>
 
-    <pre><code>dc.createHudMod({
-
+<pre><code>dc.createHudMod({
     name: "My HUD",
-
+    displayName: "My HUD",
     description: "A custom HUD element",
-
     category: "HUD",
 
-    width: 100,
-
-    height: 20,
+    width: 120,
+    height: 24,
 
     onRender2D: function() {
-
-        /*
-         * this.x
-         * this.y
-         * this.scale
-         *
-         * are synchronized with the Java HUD system.
-         */
-
+        // HUD position is exposed through this.x / this.y / this.scale.
     }
-
 });</code></pre>
 
-    <h3>HUD properties</h3>
+<table>
+<tr><th>HUD property</th><th>Description</th></tr>
+<tr><td><code>this.x</code></td><td>Current X position.</td></tr>
+<tr><td><code>this.y</code></td><td>Current Y position.</td></tr>
+<tr><td><code>this.scale</code></td><td>Current HUD scale.</td></tr>
+</table>
 
-    <table>
-      <tr>
-        <th>Property</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>this.x</code></td>
-        <td>Current X position.</td>
-      </tr>
-      <tr>
-        <td><code>this.y</code></td>
-        <td>Current Y position.</td>
-      </tr>
-      <tr>
-        <td><code>this.scale</code></td>
-        <td>Current scale multiplier.</td>
-      </tr>
-    </table>
+<div class="callout callout-info">
+  The bridge synchronizes HUD position and scale between JavaScript and the Java
+  HUD system. The current bridge does not expose a JavaScript <code>drawString()</code>
+  helper.
+</div>
 
-    <div class="callout callout-info">
-      The current bridge synchronizes HUD position and scale with Java.
-      Rendering helpers such as <code>dc.drawString()</code> are not part of
-      the current bridge shown in this documentation unless a future bridge
-      version adds them.
-    </div>
+<h2 id="chat">Chat API <span class="badge badge-core">CORE</span></h2>
 
-    <!-- ========================================================= -->
-    <!-- BRIDGE API -->
-    <!-- ========================================================= -->
+<table>
+<tr><th>API</th><th>Description</th></tr>
+<tr><td><code>dc.chat(message)</code></td><td>Displays local client-side chat text. It is not sent to the server.</td></tr>
+<tr><td><code>dc.sendChat(message)</code></td><td>Sends chat text through the normal client send-chat path.</td></tr>
+<tr><td><code>dc.sendCommand(command)</code></td><td>Sends a slash command. A leading <code>/</code> is added automatically.</td></tr>
+</table>
 
-    <h2 id="bridge-api">Bridge API (dc.*)</h2>
+<pre><code>dc.chat("§aLocal message");
+dc.sendChat("hello server");
+dc.sendCommand("spawn");
+dc.sendCommand("/spawn");</code></pre>
 
-    <p>
-      The global <code>dc</code> object is the main interface between your
-      JavaScript plugin and DeathClient.
-    </p>
+<h2 id="mod-control">Mod Control <span class="badge badge-core">CORE</span></h2>
 
-    <h3>Core</h3>
+<table>
+<tr><th>API</th><th>Description</th></tr>
+<tr><td><code>dc.enableMod(name)</code></td><td>Requests that a mod be enabled.</td></tr>
+<tr><td><code>dc.disableMod(name)</code></td><td>Requests that a mod be disabled.</td></tr>
+<tr><td><code>dc.toggleMod(name)</code></td><td>Toggles a mod.</td></tr>
+<tr><td><code>dc.isEnabled(name)</code></td><td>Reads the JavaScript-side toggle state.</td></tr>
+<tr><td><code>dc.getMods()</code></td><td>Returns names from the JavaScript mod registry.</td></tr>
+<tr><td><code>dc.getMod(name)</code></td><td>Returns the JavaScript mod object or <code>null</code>.</td></tr>
+</table>
 
-    <table>
-      <tr>
-        <th>API</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>dc.version</code></td>
-        <td>JavaScript API version exposed by the bridge.</td>
-      </tr>
-      <tr>
-        <td><code>dc.apiVersion</code></td>
-        <td>API version identifier intended for compatibility checks.</td>
-      </tr>
-    </table>
+<pre><code>dc.createCommand({
+    name: "flight",
+    prefix: ".",
+    execute: function() {
+        if (dc.isEnabled("Fly")) {
+            dc.disableMod("Fly");
+            dc.chat("§cFly disabled.");
+        } else {
+            dc.enableMod("Fly");
+            dc.chat("§aFly enabled.");
+        }
+    }
+});</code></pre>
 
-    <h3>Chat and commands</h3>
+<h2 id="player-world">Player & World <span class="badge badge-core">CORE</span></h2>
 
-    <table>
-      <tr>
-        <th>API</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>dc.chat(msg)</code></td>
-        <td>Displays client-side chat text. It is not sent to the server.</td>
-      </tr>
-      <tr>
-        <td><code>dc.sendChat(msg)</code></td>
-        <td>Sends chat text to the Minecraft server.</td>
-      </tr>
-      <tr>
-        <td><code>dc.sendCommand(cmd)</code></td>
-        <td>Sends a slash command. Adds <code>/</code> automatically if needed.</td>
-      </tr>
-    </table>
+<h3>Player properties</h3>
+<table>
+<tr><th>Property</th><th>Read</th><th>Write</th></tr>
+<tr><td><code>dc.player.x</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.y</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.z</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.motionX</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.motionY</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.motionZ</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.yaw</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.pitch</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.player.name</code></td><td>Yes</td><td>No</td></tr>
+<tr><td><code>dc.player.health</code></td><td>Yes</td><td>No</td></tr>
+<tr><td><code>dc.player.maxHealth</code></td><td>Yes</td><td>No</td></tr>
+<tr><td><code>dc.player.onGround</code></td><td>Yes</td><td>No</td></tr>
+</table>
 
-    <h3>Mod control</h3>
+<h3>Jump</h3>
+<pre><code>dc.player.jump();</code></pre>
 
-    <table>
-      <tr>
-        <th>API</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>dc.enableMod(name)</code></td>
-        <td>Requests that a mod be enabled.</td>
-      </tr>
-      <tr>
-        <td><code>dc.disableMod(name)</code></td>
-        <td>Requests that a mod be disabled.</td>
-      </tr>
-      <tr>
-        <td><code>dc.toggleMod(name)</code></td>
-        <td>Toggles a mod.</td>
-      </tr>
-      <tr>
-        <td><code>dc.isEnabled(name)</code></td>
-        <td>Returns whether a JS mod is enabled.</td>
-      </tr>
-      <tr>
-        <td><code>dc.getMods()</code></td>
-        <td>Returns the registered JS mod names.</td>
-      </tr>
-      <tr>
-        <td><code>dc.getMod(name)</code></td>
-        <td>Returns the JS mod object or <code>null</code>.</td>
-      </tr>
-      <tr>
-        <td><code>dc.getAllMods()</code></td>
-        <td>Returns the Java/JS mod list exposed by the bridge.</td>
-      </tr>
-    </table>
-
-    <h3>Visual and audio</h3>
-
-    <table>
-      <tr>
-        <th>API</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>dc.playSound(name, volume, pitch)</code></td>
-        <td>Queues a client-side sound.</td>
-      </tr>
-      <tr>
-        <td><code>dc.showTitle(title, subtitle)</code></td>
-        <td>Displays a client-side title/subtitle.</td>
-      </tr>
-    </table>
-
-    <h3>Logging</h3>
-
-    <table>
-      <tr>
-        <th>API</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>dc.log(msg)</code></td>
-        <td>Writes to the browser console.</td>
-      </tr>
-      <tr>
-        <td><code>dc.warn(msg)</code></td>
-        <td>Writes a warning to the browser console.</td>
-      </tr>
-      <tr>
-        <td><code>dc.error(msg)</code></td>
-        <td>Writes an error to the browser console.</td>
-      </tr>
-    </table>
-
-    <!-- ========================================================= -->
-    <!-- GAME STATE -->
-    <!-- ========================================================= -->
-
-    <h2 id="game-state">Player & World State</h2>
-
-    <h3>Player API</h3>
-
-    <p>
-      Use <code>dc.player</code> to read or modify selected properties of the
-      local player.
-    </p>
-
-    <table>
-      <tr>
-        <th>Property</th>
-        <th>Read</th>
-        <th>Write</th>
-      </tr>
-      <tr>
-        <td><code>x</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>y</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>z</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>motionX</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>motionY</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>motionZ</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>yaw</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>pitch</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>name</code></td>
-        <td>Yes</td>
-        <td>No</td>
-      </tr>
-      <tr>
-        <td><code>health</code></td>
-        <td>Yes</td>
-        <td>No</td>
-      </tr>
-      <tr>
-        <td><code>maxHealth</code></td>
-        <td>Yes</td>
-        <td>No</td>
-      </tr>
-      <tr>
-        <td><code>onGround</code></td>
-        <td>Yes</td>
-        <td>No</td>
-      </tr>
-    </table>
-
-    <h3>Jump</h3>
-
-    <pre><code>dc.player.jump();</code></pre>
-
-    <h3>Movement example</h3>
-
-    <pre><code>dc.player.motionX = 1.0;
+<h3>Movement</h3>
+<pre><code>dc.player.motionX = 1.0;
 dc.player.motionY = 0.0;
 dc.player.motionZ = 0.0;</code></pre>
 
-    <h3>Rotation example</h3>
+<h3>Rotation</h3>
+<pre><code>dc.player.yaw += 45;
+dc.player.pitch = 10;</code></pre>
 
-    <pre><code>dc.player.yaw += 45;</code></pre>
+<h3>World properties</h3>
+<table>
+<tr><th>Property</th><th>Read</th><th>Write</th></tr>
+<tr><td><code>dc.world.time</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>dc.world.raining</code></td><td>Yes</td><td>No</td></tr>
+</table>
 
-    <div class="callout callout-warning">
-      Writing player position, motion, or rotation is powerful. The server
-      still controls the actual game state, so server-side corrections,
-      movement checks, or rubberbanding can occur.
-    </div>
+<pre><code>dc.world.time = 6000;</code></pre>
 
-    <h3>World API</h3>
+<div class="callout callout-warning">
+  Player position and motion writes are client actions. Server-side movement correction,
+  anti-cheat checks, or rubberbanding can still override them.
+</div>
 
-    <table>
-      <tr>
-        <th>Property</th>
-        <th>Read</th>
-        <th>Write</th>
-      </tr>
-      <tr>
-        <td><code>dc.world.time</code></td>
-        <td>Yes</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><code>dc.world.raining</code></td>
-        <td>Yes</td>
-        <td>No</td>
-      </tr>
-    </table>
+<h2 id="events">Events <span class="badge badge-core">CORE</span></h2>
 
-    <pre><code>dc.world.time = 6000;</code></pre>
+<h3><code>dc.on(event, callback)</code></h3>
 
-    <!-- ========================================================= -->
-    <!-- EVENTS -->
-    <!-- ========================================================= -->
-
-    <h2 id="events">Event System</h2>
-
-    <p>
-      Global events let plugins listen for activity without putting all logic
-      inside one mod.
-    </p>
-
-    <h3>Registering an event</h3>
-
-    <pre><code>dc.on("chat_receive", function(data) {
-
-    dc.chat(
-        "Received: " + data.message
-    );
-
+<pre><code>dc.on("chat_receive", function(data) {
+    dc.chat("Received: " + data.message);
 });</code></pre>
 
-    <h3>Removing an event</h3>
+<h3><code>dc.off(event, callback)</code></h3>
 
-    <pre><code>function handleChat(data) {
-    dc.chat(data.message);
+<pre><code>function handleChat(data) {
+    dc.log(data.message);
 }
 
 dc.on("chat_receive", handleChat);
-
 dc.off("chat_receive", handleChat);</code></pre>
 
-    <h3>Run once</h3>
+<h3><code>dc.once(event, callback)</code></h3>
 
-    <pre><code>dc.once("chat_receive", function(data) {
-    dc.chat("This only runs once.");
+<pre><code>dc.once("chat_receive", function(data) {
+    dc.chat("This callback runs once.");
 });</code></pre>
 
-    <h3>Available events</h3>
+<h3><code>dc.emit(event, data)</code></h3>
 
-    <table>
-      <tr>
-        <th>Event</th>
-        <th>Payload</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>tick</code></td>
-        <td>Player state object</td>
-        <td>Fires every client tick.</td>
-      </tr>
-      <tr>
-        <td><code>chat_receive</code></td>
-        <td><code>{ message }</code></td>
-        <td>Incoming chat delivered by the client.</td>
-      </tr>
-      <tr>
-        <td><code>mod_enable</code></td>
-        <td><code>{ name }</code></td>
-        <td>A module was enabled.</td>
-      </tr>
-      <tr>
-        <td><code>mod_disable</code></td>
-        <td><code>{ name }</code></td>
-        <td>A module was disabled.</td>
-      </tr>
-      <tr>
-        <td><code>resource_loaded</code></td>
-        <td><code>{ id, url, data }</code></td>
-        <td>A resource fetch completed.</td>
-      </tr>
-      <tr>
-        <td><code>resource_error</code></td>
-        <td><code>{ id, url, error }</code></td>
-        <td>A resource fetch failed.</td>
-      </tr>
-      <tr>
-        <td><code>resource_imported</code></td>
-        <td><code>{ name, type, size }</code></td>
-        <td>A local resource was imported.</td>
-      </tr>
-    </table>
+<p>
+Plugins can emit local JavaScript events to listeners registered through the same
+JavaScript event registry.
+</p>
 
-    <!-- ========================================================= -->
-    <!-- STORAGE -->
-    <!-- ========================================================= -->
+<pre><code>dc.on("my_event", function(data) {
+    dc.log("Value: " + data.value);
+});
 
-    <h2 id="storage">Data Persistence</h2>
+dc.emit("my_event", {
+    value: 42
+});</code></pre>
 
-    <p>
-      Plugin storage lets you save values across page reloads and client
-      restarts using browser local storage.
-    </p>
+<h3>Event names used by the current system</h3>
+<table>
+<tr><th>Event</th><th>Payload</th><th>Description</th></tr>
+<tr><td><code>tick</code></td><td>State object</td><td>Client tick event when emitted by the Java side.</td></tr>
+<tr><td><code>chat_receive</code></td><td><code>{ message }</code></td><td>Incoming chat text.</td></tr>
+<tr><td><code>mod_enable</code></td><td>Module data</td><td>Module enable event when emitted.</td></tr>
+<tr><td><code>mod_disable</code></td><td>Module data</td><td>Module disable event when emitted.</td></tr>
+<tr><td>Custom names</td><td>Any value</td><td>Usable entirely within the JavaScript event system.</td></tr>
+</table>
 
-    <h3>Save a value</h3>
+<div class="callout callout-info">
+  Event availability depends on whether the Java client path emits that event.
+  <code>dc.on()</code>, <code>dc.off()</code>, <code>dc.once()</code>, and
+  <code>dc.emit()</code> themselves are part of the bridge.
+</div>
 
-    <pre><code>dc.storage.set(
-    "coins",
-    250
-);</code></pre>
+<h2 id="storage">Persistent Storage <span class="badge badge-core">CORE</span></h2>
 
-    <p>
-      Objects and arrays can also be stored:
-    </p>
+<p>
+The current bridge exposes browser local-storage persistence under
+<code>dc.storage</code>.
+</p>
 
-    <pre><code>dc.storage.set(
-    "settings",
-    {
-        price: 10,
-        enabled: true
-    }
-);</code></pre>
+<h3>Save</h3>
+<pre><code>dc.storage.set("coins", 250);</code></pre>
 
-    <h3>Load a value</h3>
+<h3>Objects and arrays</h3>
+<pre><code>dc.storage.set("settings", {
+    price: 10,
+    enabled: true,
+    modes: ["A", "B", "C"]
+});</code></pre>
 
-    <pre><code>let coins =
-    dc.storage.get("coins", 0);
+<h3>Load</h3>
+<pre><code>const coins = dc.storage.get("coins", 0);
+dc.chat("Coins: " + coins);</code></pre>
 
-dc.chat(
-    "Coins: " + coins
-);</code></pre>
+<h3>Remove</h3>
+<pre><code>dc.storage.remove("coins");</code></pre>
 
-    <h3>Delete a value</h3>
+<table>
+<tr><th>API</th><th>Purpose</th></tr>
+<tr><td><code>dc.storage.get(key, fallback)</code></td><td>Reads JSON data, returning the fallback when absent or invalid.</td></tr>
+<tr><td><code>dc.storage.set(key, value)</code></td><td>Serializes and stores a value.</td></tr>
+<tr><td><code>dc.storage.remove(key)</code></td><td>Removes a stored key.</td></tr>
+</table>
 
-    <pre><code>dc.storage.remove("coins");</code></pre>
+<div class="callout callout-warning">
+  The current bridge does <strong>not</strong> expose <code>dc.storage.clear()</code>.
+  Remove keys individually with <code>dc.storage.remove()</code>.
+</div>
 
-    <h3>Clear plugin storage</h3>
+<h2 id="resources">In-Memory Resources <span class="badge badge-core">CORE</span></h2>
 
-    <pre><code>dc.storage.clear("compete_");</code></pre>
+<p>
+The current bridge provides an in-memory resource cache. It does not expose the
+older remote fetch helpers.
+</p>
 
-    <p>
-      This is useful for grouping your plugin's values:
-    </p>
+<table>
+<tr><th>API</th><th>Description</th></tr>
+<tr><td><code>dc.resources.set(id, value)</code></td><td>Stores a value in the JavaScript resource cache and returns it.</td></tr>
+<tr><td><code>dc.resources.get(id)</code></td><td>Returns the cached value or <code>undefined</code>.</td></tr>
+<tr><td><code>dc.resources.has(id)</code></td><td>Returns whether the cache contains the ID.</td></tr>
+<tr><td><code>dc.resources.remove(id)</code></td><td>Deletes the cached ID.</td></tr>
+</table>
 
-    <pre><code>dc.storage.set(
-    "compete_bans",
-    ["Steve", "Alex"]
-);
+<pre><code>dc.resources.set("score", 100);
 
-dc.storage.set(
-    "compete_price",
-    10
-);</code></pre>
-
-    <h3>Legacy string-file API</h3>
-
-    <p>
-      The older file helpers are still available:
-    </p>
-
-    <table>
-      <tr>
-        <th>API</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>dc.saveFile(key, value)</code></td>
-        <td>Saves a string value.</td>
-      </tr>
-      <tr>
-        <td><code>dc.loadFile(key)</code></td>
-        <td>Loads a string value or returns <code>null</code>.</td>
-      </tr>
-      <tr>
-        <td><code>dc.deleteFile(key)</code></td>
-        <td>Deletes the key.</td>
-      </tr>
-      <tr>
-        <td><code>dc.listFiles(prefix)</code></td>
-        <td>Returns matching names as a <code>|||</code>-delimited string.</td>
-      </tr>
-    </table>
-
-    <p>
-      For new plugins, <code>dc.storage</code> is usually easier.
-    </p>
-
-    <!-- ========================================================= -->
-    <!-- RESOURCES -->
-    <!-- ========================================================= -->
-
-    <h2 id="resources">Resource System</h2>
-
-    <div class="callout callout-tip">
-      <strong>New:</strong>
-      Plugins can now fetch text, JSON, binary blobs, and images without
-      needing Java-side code for every resource type.
-    </div>
-
-    <p>
-      Resources are cached in memory and can be used to build richer plugins,
-      HUDs, configuration systems, asset loaders, databases, and other tools.
-    </p>
-
-    <div class="callout callout-warning">
-      <strong>Security:</strong>
-      Downloading data is different from executing downloaded code.
-      Resource fetching does not automatically execute downloaded JavaScript.
-      Treat remote code as untrusted and only execute code deliberately.
-    </div>
-
-    <h3>Fetch text</h3>
-
-    <pre><code>dc.resources.fetchText(
-    "rules",
-    "https://example.com/rules.txt",
-    function(error, text) {
-
-        if (error) {
-            dc.error(error);
-            return;
-        }
-
-        dc.chat(
-            "Rules loaded."
-        );
-    }
-);</code></pre>
-
-    <h3>Fetch JSON</h3>
-
-    <pre><code>dc.resources.fetchJSON(
-    "config",
-    "https://example.com/config.json",
-    function(error, config) {
-
-        if (error) {
-            dc.error(error);
-            return;
-        }
-
-        let price =
-            config.price;
-
-        dc.chat(
-            "Price: $" + price
-        );
-    }
-);</code></pre>
-
-    <h3>Fetch a binary resource</h3>
-
-    <pre><code>dc.resources.fetchBlob(
-    "asset",
-    "https://example.com/asset.bin",
-    function(error, blob) {
-
-        if (error) {
-            dc.error(error);
-            return;
-        }
-
-        dc.log(
-            "Loaded " + blob.size + " bytes."
-        );
-    }
-);</code></pre>
-
-    <h3>Load an image</h3>
-
-    <pre><code>dc.resources.image(
-    "logo",
-    "https://example.com/logo.png",
-    function(error, image) {
-
-        if (error) {
-            dc.error(error);
-            return;
-        }
-
-        dc.log(
-            "Image size: "
-            + image.width
-            + "x"
-            + image.height
-        );
-    }
-);</code></pre>
-
-    <h3>Use the cache</h3>
-
-    <pre><code>dc.resources.set(
-    "score",
-    100
-);
-
-let score =
-    dc.resources.get("score");
+const score = dc.resources.get("score");
 
 if (dc.resources.has("score")) {
-    dc.chat(
-        "Score: " + score
-    );
+    dc.chat("Score: " + score);
 }
 
 dc.resources.remove("score");</code></pre>
 
-    <h3>Import a local resource</h3>
+<div class="callout callout-warning">
+  The current bridge does not expose <code>fetchText()</code>, <code>fetchJSON()</code>,
+  <code>fetchBlob()</code>, <code>image()</code>, or <code>pickResource()</code> under
+  <code>dc.resources</code>.
+</div>
 
-    <pre><code>dc.pickResource();</code></pre>
+<h2 id="timers">Timers <span class="badge badge-core">CORE</span></h2>
 
-    <p>
-      Listen for the import:
-    </p>
+<h3>Timeout</h3>
+<pre><code>const id = dc.setTimeout(function() {
+    dc.chat("Two seconds passed.");
+}, 2000);
 
-    <pre><code>dc.on(
-    "resource_imported",
-    function(data) {
+dc.clearTimeout(id);</code></pre>
 
-        dc.chat(
-            "Imported "
-            + data.name
-            + " ("
-            + data.size
-            + " bytes)"
+<h3>Interval</h3>
+<pre><code>const id = dc.setInterval(function() {
+    dc.chat("Repeating...");
+}, 1000);
+
+dc.clearInterval(id);</code></pre>
+
+<table>
+<tr><th>API</th><th>Description</th></tr>
+<tr><td><code>dc.setTimeout(fn, ms)</code></td><td>Runs a function once.</td></tr>
+<tr><td><code>dc.clearTimeout(id)</code></td><td>Cancels a timeout.</td></tr>
+<tr><td><code>dc.setInterval(fn, ms)</code></td><td>Runs a function repeatedly.</td></tr>
+<tr><td><code>dc.clearInterval(id)</code></td><td>Cancels an interval.</td></tr>
+</table>
+
+<h2 id="audio">Audio & Titles <span class="badge badge-core">CORE</span></h2>
+
+<h3>Sound</h3>
+<pre><code>dc.playSound(
+    "random.orb",
+    1.0,
+    1.0
+);</code></pre>
+
+<table>
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>soundName</code></td><td>Sound resource identifier.</td></tr>
+<tr><td><code>volume</code></td><td>Volume. Defaults to <code>1</code>.</td></tr>
+<tr><td><code>pitch</code></td><td>Pitch. Defaults to <code>1</code>.</td></tr>
+</table>
+
+<h3>Title</h3>
+<pre><code>dc.showTitle(
+    "§cWARNING",
+    "§7Something happened!"
+);</code></pre>
+
+<h2 id="debug">Debugging <span class="badge badge-core">CORE</span></h2>
+
+<table>
+<tr><th>API</th><th>Description</th></tr>
+<tr><td><code>dc.log(message)</code></td><td>Writes a normal console log.</td></tr>
+<tr><td><code>dc.warn(message)</code></td><td>Writes a warning console log.</td></tr>
+<tr><td><code>dc.error(message)</code></td><td>Writes an error console log.</td></tr>
+</table>
+
+<pre><code>dc.log("Plugin started");
+dc.warn("Something may be wrong");
+dc.error("Something failed");</code></pre>
+
+<h2 id="models">Runtime Models <span class="badge badge-advanced">ADVANCED</span></h2>
+
+<p>
+The current bridge exposes runtime model registration through
+<code>dc.models.register()</code>. Models are supplied as JSON strings.
+</p>
+
+<h3><code>dc.models.register(id, json)</code></h3>
+
+<pre><code>const model = {
+    texture_size: [64, 32],
+    elements: [
+        {
+            from: [-4, 0, -3],
+            to:   [ 4, 10, 3]
+        },
+        {
+            from: [-3, 10, -3],
+            to:   [ 3, 16, 3]
+        }
+    ]
+};
+
+dc.models.register(
+    "beast",
+    JSON.stringify(model)
+);</code></pre>
+
+<h3>Alias</h3>
+<pre><code>dc.entities.registerModel(
+    "beast",
+    JSON.stringify(model)
+);</code></pre>
+
+<p>
+The alias above forwards to the same model registration queue.
+</p>
+
+<h3>Model structure</h3>
+<table>
+<tr><th>Field</th><th>Description</th></tr>
+<tr><td><code>texture_size</code></td><td>Texture width and height.</td></tr>
+<tr><td><code>elements</code></td><td>Array of cuboid model elements.</td></tr>
+<tr><td><code>from</code></td><td>Minimum corner of the cuboid.</td></tr>
+<tr><td><code>to</code></td><td>Maximum corner of the cuboid.</td></tr>
+<tr><td><code>faces</code></td><td>Optional per-face texture/UV information supported by the runtime parser.</td></tr>
+<tr><td><code>rotation</code></td><td>Optional rotation information for an element.</td></tr>
+<tr><td><code>origin</code></td><td>Optional rotation point for a rotated element.</td></tr>
+</table>
+
+<div class="callout callout-info">
+  The runtime model parser is intended for Blockbench-style cuboid model data,
+  but the exact JSON accepted is determined by the Java runtime model parser.
+</div>
+
+<h2 id="entities">Runtime Entities <span class="badge badge-advanced">ADVANCED</span></h2>
+
+<p>
+The bridge exposes a runtime entity system built around registered entity
+configurations and queued Java-side spawning/removal/query operations.
+</p>
+
+<h3><code>dc.entities.create(config)</code></h3>
+
+<p>
+The canonical creation API is an alias of <code>dc.entities.register()</code>.
+</p>
+
+<pre><code>const e = dc.entities.create({
+    id: "beast",
+    displayName: "Death Beast",
+    width: 1.0,
+    height: 2.0,
+    health: 100,
+    damage: 8,
+    speed: 0.30,
+    gravity: true,
+    ai: true,
+    model: "beast",
+    texture: "beast"
+});</code></pre>
+
+<h3>Entity configuration</h3>
+<table>
+<tr><th>Field</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Required</td><td>Unique entity identifier within the plugin.</td></tr>
+<tr><td><code>displayName</code></td><td><code>id</code></td><td>Display name.</td></tr>
+<tr><td><code>width</code></td><td>0.8</td><td>Entity width.</td></tr>
+<tr><td><code>height</code></td><td>1.8</td><td>Entity height.</td></tr>
+<tr><td><code>health</code></td><td>20</td><td>Maximum/runtime health configuration.</td></tr>
+<tr><td><code>damage</code></td><td>2</td><td>Configured damage value.</td></tr>
+<tr><td><code>speed</code></td><td>0.2</td><td>Configured movement speed.</td></tr>
+<tr><td><code>gravity</code></td><td><code>true</code></td><td>Whether the runtime entity uses gravity.</td></tr>
+<tr><td><code>ai</code></td><td><code>true</code></td><td>Whether runtime AI is requested.</td></tr>
+<tr><td><code>model</code></td><td><code>id</code></td><td>Runtime model identifier.</td></tr>
+<tr><td><code>texture</code></td><td><code>id</code></td><td>Runtime texture identifier.</td></tr>
+</table>
+
+<h3>Spawn</h3>
+<pre><code>dc.entities.spawn(
+    e,
+    dc.player.x + 5,
+    dc.player.y,
+    dc.player.z + 5
+);</code></pre>
+
+<p>Equivalent method on the returned entity configuration:</p>
+<pre><code>e.spawn(
+    dc.player.x + 5,
+    dc.player.y,
+    dc.player.z + 5
+);</code></pre>
+
+<h3>Get an entity</h3>
+<pre><code>const entity = dc.entities.get(nativeEntityId);
+
+if (entity) {
+    dc.chat("Found runtime entity.");
+}</code></pre>
+
+<h3>Remove an entity</h3>
+<pre><code>dc.entities.remove(entity);</code></pre>
+
+<p>or:</p>
+<pre><code>dc.entities.remove(nativeEntityId);</code></pre>
+
+<p>An entity configuration also exposes:</p>
+<pre><code>e.remove();</code></pre>
+
+<h3>Entity tick callback</h3>
+<pre><code>dc.entities.onTick(entity, function(runtimeEntity) {
+    dc.log("Runtime entity tick");
+});</code></pre>
+
+<p>Or through the entity object:</p>
+<pre><code>e.onTick(function(runtimeEntity) {
+    dc.log("Ticking " + runtimeEntity.id);
+});</code></pre>
+
+<h3>Nearby entity query</h3>
+<pre><code>const nearby = dc.entities.nearby(
+    dc.player.x,
+    dc.player.y,
+    dc.player.z,
+    16
+);</code></pre>
+
+<p>Alias:</p>
+<pre><code>const nearby = dc.entities.getNearby(
+    dc.player.x,
+    dc.player.y,
+    dc.player.z,
+    16
+);</code></pre>
+
+<div class="callout callout-warning">
+  Runtime entity methods are an advanced bridge feature. They depend on the
+  Java-side queue consumers and runtime entity manager being present in the
+  client build. The JavaScript methods themselves are exposed by the current
+  bridge.
+</div>
+
+<h2 id="textures">Runtime Textures <span class="badge badge-advanced">ADVANCED</span></h2>
+
+<p>
+Runtime textures are loaded from an image URL and converted into ARGB pixel data
+for the Java-side runtime texture system.
+</p>
+
+<h3><code>dc.entities.registerTexture(id, url, callback)</code></h3>
+
+<pre><code>dc.entities.registerTexture(
+    "beast",
+    "https://example.com/beast.png",
+    function(error, success) {
+        if (error) {
+            dc.error(String(error));
+            return;
+        }
+
+        dc.chat("§aEntity texture submitted.");
+    }
+);</code></pre>
+
+<p>
+The browser loads the image asynchronously. The callback is invoked after the
+image is successfully decoded or after an image loading error.
+</p>
+
+<h3>Requirements</h3>
+<ul>
+  <li>The URL must resolve to an image the browser can load.</li>
+  <li>The image is read through an HTML canvas.</li>
+  <li>The final data is queued as width, height, and integer pixel values.</li>
+</ul>
+
+<h3>Typical runtime asset sequence</h3>
+<pre><code>const model = {
+    texture_size: [64, 32],
+    elements: [
+        { from: [-4, 0, -3], to: [4, 10, 3] }
+    ]
+};
+
+dc.models.register(
+    "beast",
+    JSON.stringify(model)
+);
+
+dc.entities.registerTexture(
+    "beast",
+    "https://example.com/beast.png",
+    function(error) {
+        if (error) {
+            dc.error(error);
+            return;
+        }
+
+        const entity = dc.entities.create({
+            id: "beast",
+            displayName: "Death Beast",
+            model: "beast",
+            texture: "beast"
+        });
+
+        dc.entities.spawn(
+            entity,
+            dc.player.x + 5,
+            dc.player.y,
+            dc.player.z + 5
         );
     }
 );</code></pre>
 
-    <div class="callout callout-info">
-      Remote servers may restrict browser requests through CORS. A URL being
-      reachable in a browser does not automatically mean JavaScript is
-      permitted to fetch it cross-origin.
-    </div>
+<div class="callout callout-warning">
+  Cross-origin restrictions can affect image loading. A URL that exists does not
+  guarantee that the browser will allow the image to be read through canvas.
+</div>
 
-    <!-- ========================================================= -->
-    <!-- TIMERS -->
-    <!-- ========================================================= -->
+<h2 id="items">Runtime Items <span class="badge badge-advanced">ADVANCED</span></h2>
 
-    <h2 id="timers">Timers</h2>
+<p>
+The current bridge exposes a runtime item registry with item configuration,
+model registration, and texture registration.
+</p>
 
-    <h3>setTimeout</h3>
+<h3><code>dc.items.register(config)</code></h3>
 
-    <p>
-      Run something once after a delay.
-    </p>
-
-    <pre><code>dc.setTimeout(
-    function() {
-        dc.chat("Two seconds passed.");
-    },
-    2000
-);</code></pre>
-
-    <h3>clearTimeout</h3>
-
-    <pre><code>let timeout =
-    dc.setTimeout(
-        function() {
-            dc.chat("This may run.");
-        },
-        5000
-    );
-
-dc.clearTimeout(timeout);</code></pre>
-
-    <h3>setInterval</h3>
-
-    <pre><code>let interval =
-    dc.setInterval(
-        function() {
-            dc.chat("Repeating...");
-        },
-        1000
-    );</code></pre>
-
-    <h3>clearInterval</h3>
-
-    <pre><code>dc.clearInterval(interval);</code></pre>
-
-    <div class="callout callout-warning">
-      Always clear intervals that your plugin no longer needs. An interval can
-      continue running even after the relevant logic is no longer useful.
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- EXAMPLES -->
-    <!-- ========================================================= -->
-
-    <h2 id="examples">Complete Plugin Examples</h2>
-
-    <h3>Example: AutoGG</h3>
-
-    <pre><code>const dc = window.DeathClient;
-
-dc.createMod({
-
-    name: "AutoGG",
-
-    description:
-        "Sends GG when a match-ending message appears.",
-
-    category: "PLAYER",
-
-    isCheat: false,
-
-    onChat: function(message) {
-
-        let text =
-            String(message).toLowerCase();
-
-        if (
-            text.indexOf("victory") !== -1
-            ||
-            text.indexOf("you won") !== -1
-        ) {
-
-            dc.sendChat("gg");
-        }
-    }
+<pre><code>const item = dc.items.register({
+    id: "death_blade",
+    name: "Death Blade",
+    maxStackSize: 1,
+    model: "death_blade",
+    texture: "death_blade"
 });</code></pre>
 
-    <h3>Example: Health Alert</h3>
+<table>
+<tr><th>Field</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Required</td><td>Runtime item identifier.</td></tr>
+<tr><td><code>name</code></td><td><code>id</code></td><td>Item name.</td></tr>
+<tr><td><code>displayName</code></td><td>Used as fallback</td><td>Accepted as the name source.</td></tr>
+<tr><td><code>maxStackSize</code></td><td>64</td><td>Configured maximum stack size.</td></tr>
+<tr><td><code>model</code></td><td><code>id</code></td><td>Runtime item model identifier.</td></tr>
+<tr><td><code>texture</code></td><td><code>id</code></td><td>Runtime item texture identifier.</td></tr>
+</table>
 
-    <pre><code>dc.createMod({
+<h3>Get an item</h3>
+<pre><code>const item = dc.items.get("death_blade");</code></pre>
 
+<h3>Register an item model</h3>
+<pre><code>dc.items.registerModel(
+    "death_blade",
+    JSON.stringify(model)
+);</code></pre>
+
+<h3>Register an item texture</h3>
+<pre><code>dc.items.registerTexture(
+    "death_blade",
+    "https://example.com/death_blade.png",
+    function(error, success) {
+        if (error) {
+            dc.error(error);
+            return;
+        }
+
+        dc.chat("§aItem texture submitted.");
+    }
+);</code></pre>
+
+<div class="callout callout-warning">
+  Registering an item through the JavaScript bridge queues the runtime item
+  registration. Full in-game behavior depends on the Java runtime item manager
+  and item renderer being present in the client build.
+</div>
+
+<h2 id="examples">Working Examples</h2>
+
+<h3>Example: Health Alert</h3>
+<pre><code>const dc = window.DeathClient;
+
+dc.createMod({
     name: "Health Alert",
-
-    description:
-        "Warns you when your health is low.",
-
+    description: "Warns when health is low.",
     category: "PLAYER",
+    isCheat: false,
 
     settings: [
         dc.createSetting(
@@ -1877,710 +1083,162 @@ dc.createMod({
     ],
 
     onUpdate: function(settings) {
+        const threshold = settings["Threshold"].value;
 
-        let threshold =
-            settings["Threshold"].value;
+        if (dc.player.health &gt; 0 &&
+            dc.player.health &lt;= threshold) {
 
-        if (
-            dc.player.health > 0
-            &&
-            dc.player.health <= threshold
-        ) {
-
-            dc.playSound(
-                "random.orb",
-                1.0,
-                1.0
-            );
+            dc.playSound("random.orb", 1.0, 1.0);
         }
     }
 });</code></pre>
 
-    <h3>Example: Toggle another mod</h3>
+<h3>Example: Local command</h3>
+<pre><code>const dc = window.DeathClient;
 
-    <pre><code>dc.createCommand({
-
-    command: "flight",
-
+dc.createCommand({
+    name: "where",
     prefix: ".",
-
     execute: function() {
-
-        if (dc.isEnabled("Fly")) {
-
-            dc.disableMod("Fly");
-
-            dc.chat(
-                "§cFly disabled."
-            );
-
-        } else {
-
-            dc.enableMod("Fly");
-
-            dc.chat(
-                "§aFly enabled."
-            );
-        }
+        dc.chat(
+            "X: " + dc.player.x +
+            " Y: " + dc.player.y +
+            " Z: " + dc.player.z
+        );
     }
 });</code></pre>
 
-    <h3>Example: Persistent counter</h3>
+<h3>Example: Persistent counter</h3>
+<pre><code>const dc = window.DeathClient;
 
-    <pre><code>let count =
-    dc.storage.get(
-        "count",
-        0
-    );
+let count = dc.storage.get("count", 0);
 
 dc.createMod({
-
     name: "Counter",
 
     onEnable: function() {
-
         count++;
 
-        dc.storage.set(
-            "count",
-            count
-        );
+        dc.storage.set("count", count);
 
         dc.chat(
-            "§eLoaded count: §f"
-            + count
+            "§eLoaded count: §f" + count
         );
     }
 });</code></pre>
 
-    <h3>Example: Remote JSON configuration</h3>
+<h3>Example: Runtime model + entity</h3>
+<pre><code>const dc = window.DeathClient;
 
-    <pre><code>dc.resources.fetchJSON(
-    "server_config",
-    "https://example.com/config.json",
-    function(error, config) {
-
-        if (error) {
-            dc.error(
-                "Config failed: "
-                + error
-            );
-            return;
-        }
-
-        if (config.message) {
-            dc.chat(
-                String(config.message)
-            );
-        }
-    }
-);</code></pre>
-
-    <h3>Example: TPA/payment-style automation</h3>
-
-    <pre><code>const PRICE = 10;
-
-let pendingPlayer = null;
-
-dc.createMod({
-
-    name: "Paid TPA",
-
-    description:
-        "Requests payment before accepting TPA.",
-
-    category: "PLAYER",
-
-    settings: [
-        dc.createSetting(
-            "Slider",
-            "Price",
-            PRICE,
-            1,
-            1000,
-            1
-        )
-    ],
-
-    onChat: function(message) {
-
-        let text =
-            String(message);
-
-        /*
-         * Example parser.
-         * Adjust this to the server's exact messages.
-         */
-
-        let tpa =
-            text.match(
-                /([A-Za-z0-9_]{1,16}).*teleport.*you/i
-            );
-
-        if (tpa) {
-
-            pendingPlayer =
-                tpa[1];
-
-            let price =
-                Number(
-                    this.settingsCache &&
-                    this.settingsCache["Price"]
-                        ? this.settingsCache["Price"].value
-                        : PRICE
-                );
-
-            dc.sendCommand(
-                "msg "
-                + pendingPlayer
-                + " Pay $"
-                + price
-                + " first."
-            );
-        }
-    }
-});</code></pre>
-
-    <div class="callout callout-info">
-      Server automation depends on the exact text produced by the server's
-      commands/plugins. Use chat logging while developing parsers so your
-      regular expressions match the actual messages.
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- ADVANCED -->
-    <!-- ========================================================= -->
-
-    <h2 id="advanced-patterns">Advanced Patterns</h2>
-
-    <h3>Separate state from callbacks</h3>
-
-    <pre><code>const state = {
-    enabled: false,
-    count: 0,
-    player: null
+const model = {
+    texture_size: [64, 32],
+    elements: [
+        { from: [-4, 0, -3], to: [4, 10, 3] },
+        { from: [-3, 10, -3], to: [3, 16, 3] },
+        { from: [-6, 3, -2], to: [-4, 12, 2] },
+        { from: [4, 3, -2], to: [6, 12, 2] }
+    ]
 };
 
 dc.createMod({
-
-    name: "State Example",
-
-    onEnable: function() {
-        state.enabled = true;
-    },
-
-    onDisable: function() {
-        state.enabled = false;
-    },
-
-    onUpdate: function() {
-
-        state.count++;
-
-        state.player =
-            dc.player.name;
-    }
-});</code></pre>
-
-    <h3>Use a plugin namespace</h3>
-
-    <pre><code>const plugin = {
-
-    price: 10,
-
-    banned: {},
-
-    pending: null,
-
-    save: function() {
-
-        dc.storage.set(
-            "plugin_data",
-            {
-                price: this.price,
-                banned: this.banned
-            }
-        );
-    }
-};
-
-plugin.save();</code></pre>
-
-    <h3>Persistent ban list</h3>
-
-    <pre><code>const bans =
-    dc.storage.get(
-        "bans",
-        {}
-    );
-
-function isBanned(name) {
-
-    return !!bans[
-        String(name).toLowerCase()
-    ];
-}
-
-function ban(name) {
-
-    bans[
-        String(name).toLowerCase()
-    ] = true;
-
-    dc.storage.set(
-        "bans",
-        bans
-    );
-}
-
-function unban(name) {
-
-    delete bans[
-        String(name).toLowerCase()
-    ];
-
-    dc.storage.set(
-        "bans",
-        bans
-    );
-}</code></pre>
-
-    <h3>Listen globally instead of creating a mod</h3>
-
-    <pre><code>dc.on(
-    "chat_receive",
-    function(data) {
-
-        if (
-            data.message
-                .indexOf("[Server]") !== -1
-        ) {
-
-            dc.log(
-                "Server message:"
-                + data.message
-            );
-        }
-    }
-);</code></pre>
-
-    <h3>Resource + storage combination</h3>
-
-    <pre><code>let config =
-    dc.storage.get(
-        "remote_config",
-        null
-    );
-
-if (!config) {
-
-    dc.resources.fetchJSON(
-        "config",
-        "https://example.com/config.json",
-        function(error, data) {
-
-            if (error) {
-                return;
-            }
-
-            dc.storage.set(
-                "remote_config",
-                data
-            );
-        }
-    );
-
-} else {
-
-    dc.log(
-        "Using cached config."
-    );
-}</code></pre>
-
-    <!-- ========================================================= -->
-    <!-- API SUMMARY -->
-    <!-- ========================================================= -->
-
-    <h2>API Quick Reference</h2>
-
-    <div class="two-col">
-
-      <div>
-        <h4>Mods</h4>
-        <div class="mini-code">dc.createMod(...)
-dc.createHudMod(...)
-dc.unregisterMod(...)
-dc.enableMod(...)
-dc.disableMod(...)
-dc.toggleMod(...)
-dc.isEnabled(...)
-dc.getMods(...)
-dc.getMod(...)</div>
-      </div>
-
-      <div>
-        <h4>Commands</h4>
-        <div class="mini-code">dc.createCommand({
-    command: "...",
-    prefix: ".",
-    execute: function(args) {}
-})</div>
-      </div>
-
-      <div>
-        <h4>Chat</h4>
-        <div class="mini-code">dc.chat(...)
-dc.sendChat(...)
-dc.sendCommand(...)</div>
-      </div>
-
-      <div>
-        <h4>Player</h4>
-        <div class="mini-code">dc.player.x
-dc.player.y
-dc.player.z
-dc.player.motionX
-dc.player.motionY
-dc.player.motionZ
-dc.player.yaw
-dc.player.pitch
-dc.player.name
-dc.player.health
-dc.player.maxHealth
-dc.player.onGround
-dc.player.jump()</div>
-      </div>
-
-      <div>
-        <h4>World</h4>
-        <div class="mini-code">dc.world.time
-dc.world.raining</div>
-      </div>
-
-      <div>
-        <h4>Events</h4>
-        <div class="mini-code">dc.on(...)
-dc.off(...)
-dc.once(...)
-dc.emit(...)</div>
-      </div>
-
-      <div>
-        <h4>Storage</h4>
-        <div class="mini-code">dc.storage.get(...)
-dc.storage.set(...)
-dc.storage.remove(...)
-dc.storage.clear(...)</div>
-      </div>
-
-      <div>
-        <h4>Resources</h4>
-        <div class="mini-code">dc.resources.get(...)
-dc.resources.set(...)
-dc.resources.has(...)
-dc.resources.remove(...)
-dc.resources.fetchText(...)
-dc.resources.fetchJSON(...)
-dc.resources.fetchBlob(...)
-dc.resources.image(...)
-dc.pickResource()</div>
-      </div>
-
-      <div>
-        <h4>Timers</h4>
-        <div class="mini-code">dc.setTimeout(...)
-dc.clearTimeout(...)
-dc.setInterval(...)
-dc.clearInterval(...)</div>
-      </div>
-
-      <div>
-        <h4>UI / Logging</h4>
-        <div class="mini-code">dc.playSound(...)
-dc.showTitle(...)
-dc.log(...)
-dc.warn(...)
-dc.error(...)</div>
-      </div>
-
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- TROUBLESHOOTING -->
-    <!-- ========================================================= -->
-
-    <h2 id="troubleshooting">Troubleshooting</h2>
-
-    <h3>"My plugin does nothing"</h3>
-
-    <p>Start with:</p>
-
-    <pre><code>dc.log("PLUGIN LOADED");</code></pre>
-
-    <p>
-      Open the browser developer console and verify that the message appears.
-    </p>
-
-    <h3>"My callback isn't running"</h3>
-
-    <p>
-      Make sure the callback is inside the object passed to
-      <code>dc.createMod()</code>:
-    </p>
-
-    <pre><code>dc.createMod({
-
-    name: "Test",
-
-    onUpdate: function() {
-
-        dc.log("Tick");
-
-    }
-
-});</code></pre>
-
-    <h3>"My setting is undefined"</h3>
-
-    <p>
-      Check the exact setting name:
-    </p>
-
-    <pre><code>settings["Delay"].value</code></pre>
-
-    <p>
-      The capitalization and spaces must match the setting name.
-    </p>
-
-    <h3>"My downloaded resource fails"</h3>
-
-    <p>
-      Check:
-    </p>
-
-    <ol>
-      <li>The URL is correct.</li>
-      <li>The remote server allows the browser request with CORS.</li>
-      <li>The returned content is actually the format you expect.</li>
-      <li>Your callback checks the <code>error</code> value.</li>
-    </ol>
-
-    <h3>"My plugin causes lag"</h3>
-
-    <p>
-      Common causes include:
-    </p>
-
-    <ul>
-      <li>Large loops in <code>onUpdate</code>.</li>
-      <li>Creating huge arrays or objects every tick.</li>
-      <li>Downloading resources repeatedly.</li>
-      <li>Parsing large JSON documents every frame.</li>
-      <li>Creating too many timers or intervals.</li>
-    </ul>
-
-    <h3>"My plugin was removed but behavior continues"</h3>
-
-    <p>
-      Check whether your plugin started a <code>setInterval</code>.
-      Store its ID and call <code>dc.clearInterval()</code> when disabling.
-    </p>
-
-    <pre><code>let interval = null;
-
-dc.createMod({
-
-    name: "Timer",
-
-    onEnable: function() {
-
-        interval =
-            dc.setInterval(
-                function() {
-                    dc.chat("Ping");
-                },
-                1000
-            );
-    },
-
-    onDisable: function() {
-
-        if (interval !== null) {
-
-            dc.clearInterval(
-                interval
-            );
-
-            interval = null;
-        }
-    }
-
-});</code></pre>
-
-    <!-- ========================================================= -->
-    <!-- SECURITY -->
-    <!-- ========================================================= -->
-
-    <h2>Plugin Security & Compatibility</h2>
-
-    <p>
-      Plugins execute JavaScript in the DeathClient/browser environment.
-      Only install plugins you trust.
-    </p>
-
-    <div class="callout callout-danger">
-      <strong>Remote code warning:</strong>
-      A plugin can download arbitrary resources using browser networking APIs.
-      Do not automatically download and execute JavaScript from an untrusted
-      URL. Treat remote code as executable software.
-    </div>
-
-    <div class="callout callout-info">
-      <strong>API compatibility:</strong>
-      Plugins should prefer documented <code>dc.*</code> functions instead of
-      relying on undocumented internal objects such as
-      <code>dc._mods</code>, <code>dc._regQueue</code>, or
-      <code>dc._internalPlayer</code>.
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- FINAL -->
-    <!-- ========================================================= -->
-
-    <h2>Build Your First Plugin</h2>
-
-    <p>
-      When you are ready to make your own plugin, start with this template:
-    </p>
-
-    <pre><code>const dc = window.DeathClient;
-
-dc.createMod({
-
-    name: "My Plugin",
-
-    description:
-        "My first DeathClient plugin.",
-
-    category: "PLAYER",
-
+    name: "Death Beast",
+    displayName: "Death Beast",
+    description: "Runtime entity example",
+    category: "WORLD",
     isCheat: false,
 
-    settings: [
-
-        // Add settings here.
-        // Example:
-        // dc.createSetting(
-        //     "Toggle",
-        //     "Enabled",
-        //     true
-        // )
-
-    ],
-
-    onEnable: function(settings) {
-
-        dc.chat(
-            "§aMy Plugin enabled!"
+    onEnable: function() {
+        dc.models.register(
+            "beast",
+            JSON.stringify(model)
         );
-    },
 
-    onDisable: function(settings) {
+        const entity = dc.entities.create({
+            id: "beast",
+            displayName: "Death Beast",
+            width: 1.0,
+            height: 2.0,
+            health: 100,
+            damage: 8,
+            speed: 0.30,
+            gravity: true,
+            ai: true,
+            model: "beast",
+            texture: "beast"
+        });
 
-        dc.chat(
-            "§cMy Plugin disabled."
-        );
-    },
+        entity.onTick(function(runtimeEntity) {
+            dc.log("Death Beast tick");
+        });
 
-    onUpdate: function(settings) {
-
-        // Runs every tick.
-    },
-
-    onChat: function(message) {
-
-        // Runs for incoming chat.
-    }
-
-});
-
-dc.createCommand({
-
-    command: "myplugin",
-
-    prefix: ".",
-
-    description:
-        "My plugin command.",
-
-    execute: function(args) {
-
-        dc.chat(
-            "§eArguments: §f"
-            + args
+        dc.entities.spawn(
+            entity,
+            dc.player.x + 5,
+            dc.player.y,
+            dc.player.z + 5
         );
     }
 });</code></pre>
 
-    <div class="callout callout-tip">
-      <strong>Start small.</strong>
-      Make one thing work, then add another feature. A good first plugin is
-      usually a mod with one setting and one <code>onUpdate</code> or
-      <code>onChat</code> callback.
-    </div>
+<h2 id="troubleshooting">Troubleshooting</h2>
 
-    <div class="footer">
-      DeathClient Plugin API 2.0 · Death68093 · EaglerCraft 1.8<br>
-      Documentation updated for the expanded JavaScript bridge.
-    </div>
+<h3>My local command does nothing</h3>
+<p>Check all three parts:</p>
+<pre><code>dc.createCommand({
+    name: "test",
+    prefix: ".",
+    execute: function(args) {
+        dc.chat("Command fired: " + args);
+    }
+});</code></pre>
 
-  </main>
+<p>Then type:</p>
+<pre><code>.test hello</code></pre>
+
+<p>
+The callback registration uses <code>name</code>. Using the older
+<code>command</code> property with <code>dc.createCommand()</code> will not create
+the expected command.
+</p>
+
+<h3>The API capability scanner says something is unavailable</h3>
+<p>
+That means the exact JavaScript property or function does not exist in the currently
+installed bridge. Check the exact spelling and namespace.
+</p>
+
+<h3><code>dc.entities</code> exists but spawning fails</h3>
+<p>
+The entity JavaScript API is queue-based. The bridge can expose creation, spawning,
+removal, ticking, and queries while the Java-side runtime queue consumers are
+missing or incompatible. Check the Java entity manager/plugin manager integration.
+</p>
+
+<h3>Texture registration fails</h3>
+<p>
+Check the URL, image format, browser loading restrictions, and cross-origin access.
+The current bridge decodes the image through an HTML canvas before queueing its pixels.
+</p>
+
+<h3>Storage values disappear</h3>
+<p>
+Use <code>dc.storage.set()</code> and <code>dc.storage.get()</code> consistently.
+Values are JSON serialized. Unsupported circular objects cannot be serialized.
+</p>
+
+<h3>A mod does not receive updates</h3>
+<p>
+Make sure the mod was registered successfully and the client-side mod manager is
+calling its update path. JavaScript callbacks are not a replacement for the Java
+mod lifecycle; they are invoked by it.
+</p>
+
+
+<div class="footer">
+  DeathClient JS Plugin API · EaglerCraft 1.8 · Current bridge surface documented from the supplied bridge source.
 </div>
 
-<script>
-  const headings =
-    document.querySelectorAll('h2[id], h3[id]');
-
-  const links =
-    document.querySelectorAll('nav a');
-
-  function updateNav() {
-
-    const scroll =
-      window.scrollY + 80;
-
-    let active = null;
-
-    headings.forEach(function(h) {
-
-      if (h.offsetTop <= scroll) {
-        active = h.id;
-      }
-
-    });
-
-    links.forEach(function(link) {
-
-      link.classList.remove('active');
-
-      if (
-        active &&
-        link.getAttribute('href') === '#' + active
-      ) {
-
-        link.classList.add('active');
-      }
-
-    });
-  }
-
-  window.addEventListener(
-    'scroll',
-    updateNav
-  );
-
-  updateNav();
-</script>
-
+</main>
+</div>
 </body>
 </html>
