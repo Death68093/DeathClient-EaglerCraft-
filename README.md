@@ -10,7 +10,8 @@
   - So I made a change to the LegitMode toggle. From now on, if you join a server with legitmode enabled then the server will be notified and you will be unable to disable legit mode until you leave the server. This is so it makes the client slighly less bannable, turning it into a "hybrid client" where you can decide whether you cheat or not.
 
 # Announcement:
-  - WE'VE REBRANDED! We are now a "Hybrid Client" instead of a pure Hack Client. What does this mean? It means that this client can be considered both a hacked or a legit client depending on how it's used. If you have legit mode enabled, then you are using the legit mode, otherwise you're using the hacked version! I would keep 2 seperate projects going to keep the legit and hacked version seperate, but it's too much work, so I just made a toggle.
+  - WE HAVE A DISCORD!!!!!!!!!
+  - Join here: https://discord.gg/upKuMcrEkt
 
 Any way **THANKS FOR 20 STARS!!** It really means a lot to me. It keeps me motivated to even do anything with this project.
 Please keep enjoying the client!
