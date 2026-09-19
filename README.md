@@ -13,7 +13,7 @@
   - WE HAVE A DISCORD!!!!!!!!!
   - Join here: https://discord.gg/upKuMcrEkt
 
-Any way **THANKS FOR 20 STARS!!** It really means a lot to me. It keeps me motivated to even do anything with this project.
+Any way **THANKS FOR 30 STARS!!** It really means a lot to me. It keeps me motivated to even do anything with this project.
 Please keep enjoying the client!
 
 
