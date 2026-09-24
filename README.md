@@ -2,8 +2,6 @@
 
 ## Newest Version: v1.4.3 (1.8.8, beta) v1.4.2 (1.12.2, beta)
 
-Temp: Hi Kunno 👋
-
 ### Screenshots: https://github.com/Death68093/DeathClient-EaglerCraft-/tree/main#-screenshots
 
 # EVERYONE PLEASE READ THIS (AGAIN)!:
