@@ -466,6 +466,46 @@ h1:hover::after {
 .modal-btn.back-btn:hover {
   border-color: #444; background: #151515; transform: translateX(0); color: #fff;
 }
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal-field label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.modal-input {
+  border: 1px solid #292929;
+  background: #090909;
+  color: var(--text);
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  width: 100%;
+}
+.modal-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.modal-btn-row {
+  display: flex;
+  gap: 10px;
+}
+.modal-btn.modal-btn--danger {
+  border-color: #3f1111;
+  color: #ff8f8f;
+}
+.modal-btn.modal-btn--danger:hover {
+  border-color: var(--red);
+  background: rgba(204,0,0,.14);
+  color: #fff;
+}
 
 /* ── animations ── */
 @keyframes fadeDown {
@@ -706,23 +746,72 @@ function launchClient(targetUrl) {
 
 function openProxySettings() {
   const current = loadProxySettings();
-  const nextUrl = prompt(
-    'Set custom proxy/Wisp URL (wss://...)\nLeave empty to disable custom proxy.',
-    current.url
-  );
-  if (nextUrl === null) return;
-  const trimmed = nextUrl.trim();
-  if (!trimmed) {
+  modalTitle.innerText = 'Proxy Configuration';
+  modalContent.innerHTML = '';
+
+  const note = document.createElement('div');
+  note.className = 'modal-note';
+  note.textContent = 'Configure a custom proxy for multiplayer. Leave disabled to use default networking.';
+  modalContent.appendChild(note);
+
+  const field = document.createElement('div');
+  field.className = 'modal-field';
+
+  const label = document.createElement('label');
+  label.setAttribute('for', 'proxy-url-input');
+  label.textContent = 'Proxy URL';
+  field.appendChild(label);
+
+  const input = document.createElement('input');
+  input.id = 'proxy-url-input';
+  input.className = 'modal-input';
+  input.type = 'text';
+  input.placeholder = 'wss://your-proxy.example/ws';
+  input.value = current.url || '';
+  field.appendChild(input);
+  modalContent.appendChild(field);
+
+  const row = document.createElement('div');
+  row.className = 'modal-btn-row';
+
+  const connectBtn = document.createElement('button');
+  connectBtn.className = 'modal-btn';
+  connectBtn.style.flex = '1';
+  connectBtn.textContent = 'Connect Proxy';
+  connectBtn.onclick = () => {
+    const trimmed = input.value.trim();
+    if (!trimmed) {
+      alert('Enter a proxy URL before connecting.');
+      return;
+    }
+    if (!isValidProxyUrl(trimmed)) {
+      alert('Invalid URL. Use ws://, wss://, http://, or https://');
+      return;
+    }
+    saveProxySettings({ enabled: true, url: trimmed });
+    closeModal();
+  };
+  row.appendChild(connectBtn);
+
+  const disableBtn = document.createElement('button');
+  disableBtn.className = 'modal-btn modal-btn--danger';
+  disableBtn.style.flex = '1';
+  disableBtn.textContent = 'Disable Proxy';
+  disableBtn.onclick = () => {
     saveProxySettings({ enabled: false, url: '' });
-    alert('Custom proxy disabled. Default proxy will be used.');
-    return;
-  }
-  if (!isValidProxyUrl(trimmed)) {
-    alert('Invalid URL. Use ws://, wss://, http://, or https://');
-    return;
-  }
-  saveProxySettings({ enabled: true, url: trimmed });
-  alert('Custom proxy saved and will be used on next launch.');
+    closeModal();
+  };
+  row.appendChild(disableBtn);
+  modalContent.appendChild(row);
+
+  const backBtn = document.createElement('button');
+  backBtn.className = 'modal-btn back-btn';
+  backBtn.textContent = 'Close';
+  backBtn.onclick = closeModal;
+  modalContent.appendChild(backBtn);
+
+  modalOverlay.classList.remove('hidden');
+  setTimeout(() => input.focus(), 0);
 }
 
 function openVersionModal(e) {
