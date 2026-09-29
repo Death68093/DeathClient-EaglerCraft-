@@ -49,6 +49,12 @@
 						crashOnUncaughtExceptions: true,
 						wispServerURL: "wss://deathclient-eaglercraft.onrender.com",
 					};
+					var q = window.location.search;
+					if((typeof q === "string") && q[0] === "?" && (typeof window.URLSearchParams !== "undefined")) {
+						q = new window.URLSearchParams(q);
+						var w = q.get("wisp");
+						if(w) window.eaglercraftXOpts.wispServerURL = w;
+					}
 					main();
 				}
 			});
