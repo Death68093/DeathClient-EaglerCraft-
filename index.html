@@ -373,10 +373,29 @@ h1:hover::after {
 
 .status-right {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--mono);
   font-size: 10px;
   color: #2a2a2a;
   letter-spacing: .1em;
+}
+
+#proxy-settings-btn {
+  border: 1px solid #262626;
+  background: #101010;
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+#proxy-settings-btn:hover {
+  color: var(--red3);
+  border-color: #3f1111;
 }
 
 /* ── corner decoration ── */
@@ -582,7 +601,10 @@ h1:hover::after {
     <div class="dot dim"></div>
     <span id="status-mods">0 MODS ACTIVE</span>
   </div>
-  <div class="status-right" id="clock"></div>
+  <div class="status-right">
+    <button id="proxy-settings-btn" onclick="openProxySettings()">PROXY: DEFAULT</button>
+    <div id="clock"></div>
+  </div>
 </div>
 
 <div id="modal-overlay" class="hidden">
@@ -632,6 +654,76 @@ const modalContent = document.getElementById('modal-content');
 let selectedBase = null;
 let selectedMajor = null;
 let selectedMinor = null;
+const PROXY_SETTINGS_KEY = 'deathclient_proxy_settings_v1';
+
+function loadProxySettings() {
+  try {
+    const raw = localStorage.getItem(PROXY_SETTINGS_KEY);
+    if (!raw) return { enabled: false, url: '' };
+    const parsed = JSON.parse(raw);
+    return {
+      enabled: parsed.enabled === true,
+      url: typeof parsed.url === 'string' ? parsed.url : ''
+    };
+  } catch (err) {
+    return { enabled: false, url: '' };
+  }
+}
+
+function saveProxySettings(settings) {
+  localStorage.setItem(PROXY_SETTINGS_KEY, JSON.stringify(settings));
+  updateProxyBadge();
+}
+
+function updateProxyBadge() {
+  const btn = document.getElementById('proxy-settings-btn');
+  if (!btn) return;
+  const settings = loadProxySettings();
+  btn.textContent = settings.enabled && settings.url ? 'PROXY: CUSTOM' : 'PROXY: DEFAULT';
+}
+
+function isValidProxyUrl(proxyURL) {
+  try {
+    const parsed = new URL(proxyURL);
+    return ['wss:', 'ws:', 'https:', 'http:'].includes(parsed.protocol);
+  } catch (err) {
+    return false;
+  }
+}
+
+function buildLaunchUrl(targetUrl) {
+  const launchURL = new URL(targetUrl, window.location.href);
+  const settings = loadProxySettings();
+  if (settings.enabled && settings.url) {
+    launchURL.searchParams.set('wisp', settings.url);
+  }
+  return launchURL.toString();
+}
+
+function launchClient(targetUrl) {
+  window.location.href = buildLaunchUrl(targetUrl);
+}
+
+function openProxySettings() {
+  const current = loadProxySettings();
+  const nextUrl = prompt(
+    'Set custom proxy/Wisp URL (wss://...)\nLeave empty to disable custom proxy.',
+    current.url
+  );
+  if (nextUrl === null) return;
+  const trimmed = nextUrl.trim();
+  if (!trimmed) {
+    saveProxySettings({ enabled: false, url: '' });
+    alert('Custom proxy disabled. Default proxy will be used.');
+    return;
+  }
+  if (!isValidProxyUrl(trimmed)) {
+    alert('Invalid URL. Use ws://, wss://, http://, or https://');
+    return;
+  }
+  saveProxySettings({ enabled: true, url: trimmed });
+  alert('Custom proxy saved and will be used on next launch.');
+}
 
 function openVersionModal(e) {
   if (e) e.preventDefault();
@@ -780,9 +872,9 @@ function handleVersionSelect(v, isFromLatest = false) {
   if (v.hasJS && v.hasWASM) {
     renderEngines(v, isFromLatest);
   } else if (v.hasJS) {
-    window.location.href = v.urlJS;
+    launchClient(v.urlJS);
   } else if (v.hasWASM) {
-    window.location.href = v.urlWASM;
+    launchClient(v.urlWASM);
   }
 }
 
@@ -794,7 +886,7 @@ function renderEngines(v, isFromLatest = false) {
     const btnJS = document.createElement('button');
     btnJS.className = 'modal-btn';
     btnJS.innerHTML = `<span>JS Engine</span> <span style="color:var(--green); font-size:10px;">JAVASCRIPT</span>`;
-    btnJS.onclick = () => window.location.href = v.urlJS;
+    btnJS.onclick = () => launchClient(v.urlJS);
     modalContent.appendChild(btnJS);
   }
   
@@ -802,7 +894,7 @@ function renderEngines(v, isFromLatest = false) {
     const btnWASM = document.createElement('button');
     btnWASM.className = 'modal-btn';
     btnWASM.innerHTML = `<span>WASM Engine</span> <span style="color:#3399ff; font-size:10px;">WEBASSEMBLY</span>`;
-    btnWASM.onclick = () => window.location.href = v.urlWASM;
+    btnWASM.onclick = () => launchClient(v.urlWASM);
     modalContent.appendChild(btnWASM);
   }
 
@@ -990,6 +1082,7 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+updateProxyBadge();
 
 /* ── keyboard shortcuts ── */
 document.addEventListener('keydown', function(e) {
